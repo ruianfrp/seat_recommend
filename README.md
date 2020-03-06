@@ -13,3 +13,9 @@ classes = ["aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat"
 6、就会生成对应的2007_train.txt，每一行对应其图片位置及其真实框的位置。  
 7、在训练前需要修改model_data里面的voc_classes.txt文件，需要将classes改成你自己的classes。  
 8、运行train.py即可开始训练。  
+
+# 插件版本
+    - Python 3.5.2
+    - Keras 2.1.5
+    - tensorflow 1.6.0
+    - numpy 1.16.0
