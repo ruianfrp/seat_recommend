@@ -7,16 +7,18 @@ from keras import backend as K
 from keras.models import load_model
 from keras.layers import Input
 from PIL import Image, ImageFont, ImageDraw
-from nets.yolo3 import yolo_body,yolo_eval
+from nets.yolo3 import yolo_body, yolo_eval
 from utils.utils import letterbox_image
+
+
 class YOLO(object):
     _defaults = {
         "model_path": 'model_data/yolo_weights.h5',
         "anchors_path": 'model_data/yolo_anchors.txt',
         "classes_path": 'model_data/coco_classes.txt',
-        "score" : 0.5,
-        "iou" : 0.3,
-        "model_image_size" : (416, 416)
+        "score": 0.5,
+        "iou": 0.3,
+        "model_image_size": (416, 416)
     }
 
     @classmethod
@@ -26,9 +28,9 @@ class YOLO(object):
         else:
             return "Unrecognized attribute name '" + n + "'"
 
-    #---------------------------------------------------#
+    # ---------------------------------------------------#
     #   初始化yolo
-    #---------------------------------------------------#
+    # ---------------------------------------------------#
     def __init__(self, **kwargs):
         self.__dict__.update(self._defaults)
         self.class_names = self._get_class()
@@ -36,9 +38,9 @@ class YOLO(object):
         self.sess = K.get_session()
         self.boxes, self.scores, self.classes = self.generate()
 
-    #---------------------------------------------------#
+    # ---------------------------------------------------#
     #   获得所有的分类
-    #---------------------------------------------------#
+    # ---------------------------------------------------#
     def _get_class(self):
         classes_path = os.path.expanduser(self.classes_path)
         with open(classes_path) as f:
@@ -46,9 +48,9 @@ class YOLO(object):
         class_names = [c.strip() for c in class_names]
         return class_names
 
-    #---------------------------------------------------#
+    # ---------------------------------------------------#
     #   获得所有的先验框
-    #---------------------------------------------------#
+    # ---------------------------------------------------#
     def _get_anchors(self):
         anchors_path = os.path.expanduser(self.anchors_path)
         with open(anchors_path) as f:
@@ -56,13 +58,13 @@ class YOLO(object):
         anchors = [float(x) for x in anchors.split(',')]
         return np.array(anchors).reshape(-1, 2)
 
-    #---------------------------------------------------#
+    # ---------------------------------------------------#
     #   获得所有的分类
-    #---------------------------------------------------#
+    # ---------------------------------------------------#
     def generate(self):
         model_path = os.path.expanduser(self.model_path)
         assert model_path.endswith('.h5'), 'Keras model or weights must be a .h5 file.'
-        
+
         # 计算anchor数量
         num_anchors = len(self.anchors)
         num_classes = len(self.class_names)
@@ -72,11 +74,11 @@ class YOLO(object):
         try:
             self.yolo_model = load_model(model_path, compile=False)
         except:
-            self.yolo_model = yolo_body(Input(shape=(None,None,3)), num_anchors//3, num_classes)
+            self.yolo_model = yolo_body(Input(shape=(None, None, 3)), num_anchors // 3, num_classes)
             self.yolo_model.load_weights(self.model_path)
         else:
             assert self.yolo_model.layers[-1].output_shape[-1] == \
-                num_anchors/len(self.yolo_model.output) * (num_classes + 5), \
+                   num_anchors / len(self.yolo_model.output) * (num_classes + 5), \
                 'Mismatch between model and given anchor and class sizes'
 
         print('{} model, anchors, and classes loaded.'.format(model_path))
@@ -94,22 +96,22 @@ class YOLO(object):
         np.random.shuffle(self.colors)
         np.random.seed(None)
 
-        self.input_image_shape = K.placeholder(shape=(2, ))
+        self.input_image_shape = K.placeholder(shape=(2,))
 
         boxes, scores, classes = yolo_eval(self.yolo_model.output, self.anchors,
-                num_classes, self.input_image_shape,
-                score_threshold=self.score, iou_threshold=self.iou)
+                                           num_classes, self.input_image_shape,
+                                           score_threshold=self.score, iou_threshold=self.iou)
         return boxes, scores, classes
 
-    #---------------------------------------------------#
+    # ---------------------------------------------------#
     #   检测图片
-    #---------------------------------------------------#
+    # ---------------------------------------------------#
     def detect_image(self, image):
         start = timer()
 
         # 调整图片使其符合输入要求
         new_image_size = (image.width - (image.width % 32),
-                            image.height - (image.height % 32))
+                          image.height - (image.height % 32))
         boxed_image = letterbox_image(image, new_image_size)
         image_data = np.array(boxed_image, dtype='float32')
         image_data /= 255.
@@ -127,10 +129,10 @@ class YOLO(object):
         print('Found {} boxes for {}'.format(len(out_boxes), 'img'))
         # 设置字体
         font = ImageFont.truetype(font='font/simhei.ttf',
-                    size=np.floor(3e-2 * image.size[1] + 0.5).astype('int32'))
+                                  size=np.floor(3e-2 * image.size[1] + 0.5).astype('int32'))
         thickness = (image.size[0] + image.size[1]) // 300
 
-        small_pic=[]
+        small_pic = []
 
         for i, c in list(enumerate(out_classes)):
             predicted_class = self.class_names[c]
@@ -154,7 +156,7 @@ class YOLO(object):
             label_size = draw.textsize(label, font)
             label = label.encode('utf-8')
             print(label)
-            
+
             if top - label_size[1] >= 0:
                 text_origin = np.array([left, top - label_size[1]])
             else:
@@ -167,7 +169,7 @@ class YOLO(object):
             draw.rectangle(
                 [tuple(text_origin), tuple(text_origin + label_size)],
                 fill=self.colors[c])
-            draw.text(text_origin, str(label,'UTF-8'), fill=(0, 0, 0), font=font)
+            draw.text(text_origin, str(label, 'UTF-8'), fill=(0, 0, 0), font=font)
             del draw
 
         end = timer()

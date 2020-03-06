@@ -12,78 +12,82 @@ from nets.darknet53 import darknet_body
 from utils.utils import compose
 
 
-#--------------------------------------------------#
+# --------------------------------------------------#
 #   单次卷积
-#--------------------------------------------------#
+# --------------------------------------------------#
 @wraps(Conv2D)
 def DarknetConv2D(*args, **kwargs):
     darknet_conv_kwargs = {'kernel_regularizer': l2(5e-4)}
-    darknet_conv_kwargs['padding'] = 'valid' if kwargs.get('strides')==(2,2) else 'same'
+    darknet_conv_kwargs['padding'] = 'valid' if kwargs.get('strides') == (2, 2) else 'same'
     darknet_conv_kwargs.update(kwargs)
     return Conv2D(*args, **darknet_conv_kwargs)
 
-#---------------------------------------------------#
+
+# ---------------------------------------------------#
 #   卷积块
 #   DarknetConv2D + BatchNormalization + LeakyReLU
-#---------------------------------------------------#
+# ---------------------------------------------------#
 def DarknetConv2D_BN_Leaky(*args, **kwargs):
     no_bias_kwargs = {'use_bias': False}
     no_bias_kwargs.update(kwargs)
-    return compose( 
+    return compose(
         DarknetConv2D(*args, **no_bias_kwargs),
         BatchNormalization(),
         LeakyReLU(alpha=0.1))
 
-#---------------------------------------------------#
+
+# ---------------------------------------------------#
 #   特征层->最后的输出
-#---------------------------------------------------#
+# ---------------------------------------------------#
 def make_last_layers(x, num_filters, out_filters):
     # 五次卷积
-    x = DarknetConv2D_BN_Leaky(num_filters, (1,1))(x)
-    x = DarknetConv2D_BN_Leaky(num_filters*2, (3,3))(x)
-    x = DarknetConv2D_BN_Leaky(num_filters, (1,1))(x)
-    x = DarknetConv2D_BN_Leaky(num_filters*2, (3,3))(x)
-    x = DarknetConv2D_BN_Leaky(num_filters, (1,1))(x)
+    x = DarknetConv2D_BN_Leaky(num_filters, (1, 1))(x)
+    x = DarknetConv2D_BN_Leaky(num_filters * 2, (3, 3))(x)
+    x = DarknetConv2D_BN_Leaky(num_filters, (1, 1))(x)
+    x = DarknetConv2D_BN_Leaky(num_filters * 2, (3, 3))(x)
+    x = DarknetConv2D_BN_Leaky(num_filters, (1, 1))(x)
 
     # 将最后的通道数调整为outfilter
-    y = DarknetConv2D_BN_Leaky(num_filters*2, (3,3))(x)
-    y = DarknetConv2D(out_filters, (1,1))(y)
-            
+    y = DarknetConv2D_BN_Leaky(num_filters * 2, (3, 3))(x)
+    y = DarknetConv2D(out_filters, (1, 1))(y)
+
     return x, y
 
-#---------------------------------------------------#
+
+# ---------------------------------------------------#
 #   特征层->最后的输出
-#---------------------------------------------------#
+# ---------------------------------------------------#
 def yolo_body(inputs, num_anchors, num_classes):
     # 生成darknet53的主干模型
-    feat1,feat2,feat3 = darknet_body(inputs)
+    feat1, feat2, feat3 = darknet_body(inputs)
     darknet = Model(inputs, feat3)
 
     # 第一个特征层
     # y1=(batch_size,13,13,3,85)
-    x, y1 = make_last_layers(darknet.output, 512, num_anchors*(num_classes+5))
+    x, y1 = make_last_layers(darknet.output, 512, num_anchors * (num_classes + 5))
 
     x = compose(
-            DarknetConv2D_BN_Leaky(256, (1,1)),
-            UpSampling2D(2))(x)
-    x = Concatenate()([x,feat2])
+        DarknetConv2D_BN_Leaky(256, (1, 1)),
+        UpSampling2D(2))(x)
+    x = Concatenate()([x, feat2])
     # 第二个特征层
     # y2=(batch_size,26,26,3,85)
-    x, y2 = make_last_layers(x, 256, num_anchors*(num_classes+5))
+    x, y2 = make_last_layers(x, 256, num_anchors * (num_classes + 5))
 
     x = compose(
-            DarknetConv2D_BN_Leaky(128, (1,1)),
-            UpSampling2D(2))(x)
-    x = Concatenate()([x,feat1])
+        DarknetConv2D_BN_Leaky(128, (1, 1)),
+        UpSampling2D(2))(x)
+    x = Concatenate()([x, feat1])
     # 第三个特征层
     # y3=(batch_size,52,52,3,85)
-    x, y3 = make_last_layers(x, 128, num_anchors*(num_classes+5))
+    x, y3 = make_last_layers(x, 128, num_anchors * (num_classes + 5))
 
-    return Model(inputs, [y1,y2,y3])
+    return Model(inputs, [y1, y2, y3])
 
-#---------------------------------------------------#
+
+# ---------------------------------------------------#
 #   将预测值的每个特征层调成真实值
-#---------------------------------------------------#
+# ---------------------------------------------------#
 def yolo_head(feats, anchors, num_classes, input_shape, calc_loss=False):
     num_anchors = len(anchors)
     # [1, 1, 1, num_anchors, 2]
@@ -91,11 +95,11 @@ def yolo_head(feats, anchors, num_classes, input_shape, calc_loss=False):
 
     # 获得x，y的网格
     # (13, 13, 1, 2)
-    grid_shape = K.shape(feats)[1:3] # height, width
+    grid_shape = K.shape(feats)[1:3]  # height, width
     grid_y = K.tile(K.reshape(K.arange(0, stop=grid_shape[0]), [-1, 1, 1, 1]),
-        [1, grid_shape[1], 1, 1])
+                    [1, grid_shape[1], 1, 1])
     grid_x = K.tile(K.reshape(K.arange(0, stop=grid_shape[1]), [1, -1, 1, 1]),
-        [grid_shape[0], 1, 1, 1])
+                    [grid_shape[0], 1, 1, 1])
     grid = K.concatenate([grid_x, grid_y])
     grid = K.cast(grid, K.dtype(feats))
 
@@ -115,26 +119,27 @@ def yolo_head(feats, anchors, num_classes, input_shape, calc_loss=False):
         return grid, feats, box_xy, box_wh
     return box_xy, box_wh, box_confidence, box_class_probs
 
-#---------------------------------------------------#
+
+# ---------------------------------------------------#
 #   对box进行调整，使其符合真实图片的样子
-#---------------------------------------------------#
+# ---------------------------------------------------#
 def yolo_correct_boxes(box_xy, box_wh, input_shape, image_shape):
     box_yx = box_xy[..., ::-1]
     box_hw = box_wh[..., ::-1]
-    
+
     input_shape = K.cast(input_shape, K.dtype(box_yx))
     image_shape = K.cast(image_shape, K.dtype(box_yx))
 
-    new_shape = K.round(image_shape * K.min(input_shape/image_shape))
-    offset = (input_shape-new_shape)/2./input_shape
-    scale = input_shape/new_shape
+    new_shape = K.round(image_shape * K.min(input_shape / image_shape))
+    offset = (input_shape - new_shape) / 2. / input_shape
+    scale = input_shape / new_shape
 
     box_yx = (box_yx - offset) * scale
     box_hw *= scale
 
     box_mins = box_yx - (box_hw / 2.)
     box_maxes = box_yx + (box_hw / 2.)
-    boxes =  K.concatenate([
+    boxes = K.concatenate([
         box_mins[..., 0:1],  # y_min
         box_mins[..., 1:2],  # x_min
         box_maxes[..., 0:1],  # y_max
@@ -144,9 +149,10 @@ def yolo_correct_boxes(box_xy, box_wh, input_shape, image_shape):
     boxes *= K.concatenate([image_shape, image_shape])
     return boxes
 
-#---------------------------------------------------#
+
+# ---------------------------------------------------#
 #   获取每个box和它的得分
-#---------------------------------------------------#
+# ---------------------------------------------------#
 def yolo_boxes_and_scores(feats, anchors, num_classes, input_shape, image_shape):
     # 将预测值调成真实值
     # box_xy对应框的中心点
@@ -161,9 +167,10 @@ def yolo_boxes_and_scores(feats, anchors, num_classes, input_shape, image_shape)
     box_scores = K.reshape(box_scores, [-1, num_classes])
     return boxes, box_scores
 
-#---------------------------------------------------#
+
+# ---------------------------------------------------#
 #   图片预测
-#---------------------------------------------------#
+# ---------------------------------------------------#
 def yolo_eval(yolo_outputs,
               anchors,
               num_classes,
@@ -176,14 +183,15 @@ def yolo_eval(yolo_outputs,
     # 特征层1对应的anchor是678
     # 特征层2对应的anchor是345
     # 特征层3对应的anchor是012
-    anchor_mask = [[6,7,8], [3,4,5], [0,1,2]]
-    
+    anchor_mask = [[6, 7, 8], [3, 4, 5], [0, 1, 2]]
+
     input_shape = K.shape(yolo_outputs[0])[1:3] * 32
     boxes = []
     box_scores = []
     # 对每个特征层进行处理
     for l in range(num_layers):
-        _boxes, _box_scores = yolo_boxes_and_scores(yolo_outputs[l], anchors[anchor_mask[l]], num_classes, input_shape, image_shape)
+        _boxes, _box_scores = yolo_boxes_and_scores(yolo_outputs[l], anchors[anchor_mask[l]], num_classes, input_shape,
+                                                    image_shape)
         boxes.append(_boxes)
         box_scores.append(_box_scores)
     # 将每个特征层的结果进行堆叠
@@ -218,5 +226,3 @@ def yolo_eval(yolo_outputs,
     classes_ = K.concatenate(classes_, axis=0)
 
     return boxes_, scores_, classes_
-
-
