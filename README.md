@@ -17,5 +17,7 @@ classes = ["aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat"
 # 插件版本
     - Python 3.5.2
     - Keras 2.1.5
-    - tensorflow 1.6.0
+    - tensorflow-gpu 1.6.0
     - numpy 1.16.0
+    - cuda 9.0
+    - cudnn 7.0.5
