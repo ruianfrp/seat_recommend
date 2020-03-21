@@ -1,4 +1,6 @@
 import pymysql
+from flask import json
+
 import AesCipher
 import pandas as pd
 
@@ -18,7 +20,7 @@ def mysql_login():
 
 
 # user录入
-def user_insert(user_no, password):
+def user_insert(username, password):
     global cipher
     conn = pymysql.connect(host="localhost", user="root", password="123456", database="seat_recommend",
                            charset="utf8")
@@ -31,23 +33,23 @@ def user_insert(user_no, password):
         # print(cipher)
     try:
         # 执行SQL语句
-        cursor.execute(sql, [user_no, cipher, user_no])
+        cursor.execute(sql, [username, cipher, username])
         # 提交事务
         conn.commit()
         # 提交之后，获取刚插入的数据的ID
         last_id = cursor.lastrowid
-        if last_id != 0:
-            print(last_id)
-        else:
-            print("用户已存在!")
+        cursor.close()
+        conn.close()
+        return last_id
     except Exception as e:
         # 有异常，回滚事务
         conn.rollback()
-        print(e)
-    cursor.close()
-    conn.close()
+        cursor.close()
+        conn.close()
+        return str(e)
 
 
+# 搜索用户密码（登陆时）
 def user_select(user_no):
     global ret
     conn = pymysql.connect(host="localhost", user="root", password="123456", database="seat_recommend",
@@ -63,7 +65,7 @@ def user_select(user_no):
     except Exception as e:
         # 有异常，回滚事务
         conn.rollback()
-        print(e)
+        # print(e)
     cursor.close()
     conn.close()
     return ret[0]
@@ -189,8 +191,106 @@ def seat_update(seat_state, seat_id):
     conn.close()
 
 
+# 教室信息查询
+def classroom_select():
+    result = None
+    conn = pymysql.connect(host="localhost", user="root", password="123456", database="seat_recommend",
+                           charset="utf8")
+    # 得到一个可以执行SQL语句的光标对象
+    cursor = conn.cursor()
+    # 查询数据的SQL语句
+    sql = "SELECT id, classroom_name, seat_num  from classroom;"
+    try:
+        # 执行SQL语句
+        cursor.execute(sql)
+        # 获取多条查询数据
+        result = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return result
+    except Exception as e:
+        # 有异常，回滚事务
+        conn.rollback()
+        cursor.close()
+        conn.close()
+        return result
+
+
+# 座位信息查询
+def seat_real_select(classroom_id):
+    result = None
+    conn = pymysql.connect(host="localhost", user="root", password="123456", database="seat_recommend",
+                           charset="utf8")
+    # 得到一个可以执行SQL语句的光标对象
+    cursor = conn.cursor()
+    # 查询数据的SQL语句
+    sql = "SELECT id, seat_state from seat where fk_classroom_id=%s;"
+    try:
+        # 执行SQL语句
+        cursor.execute(sql, classroom_id)
+        # 获取多条查询数据
+        result = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return result
+    except Exception as e:
+        # 有异常，回滚事务
+        conn.rollback()
+        cursor.close()
+        conn.close()
+        return result
+
+
+# 特殊位置空余搜索（教室页面搜索）
+def classroom_special_select(seat_place):
+    result = None
+    conn = pymysql.connect(host="localhost", user="root", password="123456", database="seat_recommend",
+                           charset="utf8")
+    # 得到一个可以执行SQL语句的光标对象
+    cursor = conn.cursor()
+    # 查询数据的SQL语句
+    sql = "SELECT s.fk_classroom_id, c.seat_num, count(s.id) as seat_free from seat as s left join classroom as c " \
+          "on c.id=s.fk_classroom_id where s.seat_place=%s and s.seat_state=0 group by s.fk_classroom_id"
+    try:
+        # 执行SQL语句
+        cursor.execute(sql, seat_place)
+        # 获取多条查询数据
+        result = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return result
+    except Exception as e:
+        # 有异常，回滚事务
+        conn.rollback()
+        cursor.close()
+        conn.close()
+        return result
+
+
+# 特殊位置空余搜索（座位页面搜索）
+def seat_special_select(seat_place, classroom_id):
+    result = None
+    conn = pymysql.connect(host="localhost", user="root", password="123456", database="seat_recommend",
+                           charset="utf8")
+    # 得到一个可以执行SQL语句的光标对象
+    cursor = conn.cursor()
+    # 查询数据的SQL语句
+    sql = "SELECT id from seat where seat_state=0 and seat_place=%s and fk_classroom_id=%s"
+    try:
+        # 执行SQL语句
+        cursor.execute(sql, [seat_place, classroom_id])
+        # 获取多条查询数据
+        result = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return result
+    except Exception as e:
+        # 有异常，回滚事务
+        conn.rollback()
+        cursor.close()
+        conn.close()
+        return result
+
+
 if __name__ == "__main__":
-    user_insert('admin', 'Ab123456')
-    a = user_select('admin')
-    print(a)
-    print(AesCipher.decrypt(a))
+    classroom_select()
