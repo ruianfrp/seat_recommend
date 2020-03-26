@@ -151,6 +151,9 @@ class YOLO(object):
             right = min(image.size[0], np.floor(right + 0.5).astype('int32'))
 
             print(top, left, bottom, right)
+            pic_x = (right + left) / 2
+            pic_y = (top + bottom) / 2
+            print(pic_x, pic_y)
 
             # 画框框
             label = '{} {:.2f}'.format(predicted_class, score)
