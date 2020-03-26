@@ -145,7 +145,6 @@ def yolo_correct_boxes(box_xy, box_wh, input_shape, image_shape):
         box_maxes[..., 0:1],  # y_max
         box_maxes[..., 1:2]  # x_max
     ])
-
     boxes *= K.concatenate([image_shape, image_shape])
     return boxes
 
@@ -159,7 +158,7 @@ def yolo_boxes_and_scores(feats, anchors, num_classes, input_shape, image_shape)
     # box_wh对应框的宽和高
     # -1,13,13,3,2; -1,13,13,3,2; -1,13,13,3,1; -1,13,13,3,80
     box_xy, box_wh, box_confidence, box_class_probs = yolo_head(feats, anchors, num_classes, input_shape)
-    # 将box_xy、和box_wh调节成y_min,y_max,xmin,xmax
+    # 将box_xy、和box_wh调节成y_min,y_max,x_min,x_max
     boxes = yolo_correct_boxes(box_xy, box_wh, input_shape, image_shape)
     # 获得得分和box
     boxes = K.reshape(boxes, [-1, 4])
@@ -180,9 +179,9 @@ def yolo_eval(yolo_outputs,
               iou_threshold=.5):
     # 获得特征层的数量
     num_layers = len(yolo_outputs)
-    # 特征层1对应的anchor是678
-    # 特征层2对应的anchor是345
-    # 特征层3对应的anchor是012
+    # 特征层1对应的anchor是6,7,8
+    # 特征层2对应的anchor是3,4,5
+    # 特征层3对应的anchor是0,1,2
     anchor_mask = [[6, 7, 8], [3, 4, 5], [0, 1, 2]]
 
     input_shape = K.shape(yolo_outputs[0])[1:3] * 32
