@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="883beecd-ece1-4f72-a1db-aa4b881616ff" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/isPointInRect.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mysql.py" beforeDir="false" afterPath="$PROJECT_DIR$/mysql.py" afterDir="false" />
@@ -256,7 +255,7 @@
       <workItem from="1585027385900" duration="2691000" />
       <workItem from="1585123224556" duration="1210000" />
       <workItem from="1585191536278" duration="3174000" />
-      <workItem from="1585281219455" duration="10236000" />
+      <workItem from="1585281219455" duration="10501000" />
     </task>
     <servers />
   </component>

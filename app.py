@@ -161,7 +161,7 @@ def get_special_seat_info():
             app.logger.info("座位信息返回成功!")
             return jsonify({"data": data, "info": "座位信息返回成功!"}), 200
     else:
-        error = "返回为空!"
+        error = "request返回为空!"
         app.logger.error(error)
         return jsonify({"error": error}), 403
 
