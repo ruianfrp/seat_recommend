@@ -172,16 +172,16 @@ def seat_insert_many(data):
 
 
 # 修改座位信息
-def seat_update(seat_state, seat_id):
+def seat_update(seat_id):
     conn = pymysql.connect(host="localhost", user="root", password="123456", database="seat_recommend",
                            charset="utf8")
     # 得到一个可以执行SQL语句的光标对象
     cursor = conn.cursor()
     # 修改数据的SQL语句
-    sql = "UPDATE seat SET seat_state=%s WHERE id=%s;"
+    sql = "UPDATE seat SET seat_state=1 WHERE id=%s;"
     try:
         # 执行SQL语句
-        cursor.execute(sql, [seat_state, seat_id])
+        cursor.execute(sql, seat_id)
         # 提交事务
         conn.commit()
     except Exception as e:
@@ -199,7 +199,7 @@ def classroom_select():
     # 得到一个可以执行SQL语句的光标对象
     cursor = conn.cursor()
     # 查询数据的SQL语句
-    sql = "SELECT id, classroom_name, seat_num  from classroom;"
+    sql = "SELECT id, classroom_name, seat_num from classroom;"
     try:
         # 执行SQL语句
         cursor.execute(sql)
@@ -279,6 +279,45 @@ def seat_special_select(seat_place, classroom_id):
     try:
         # 执行SQL语句
         cursor.execute(sql, [seat_place, classroom_id])
+        # 获取多条查询数据
+        result = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return result
+    except Exception as e:
+        # 有异常，回滚事务
+        conn.rollback()
+        cursor.close()
+        conn.close()
+        return result
+
+
+# 搜索人物是否在某个位置上(包含初始化座位信息)
+def seat_select(pic_x, pic_y, classroom_id):
+    result = None
+    conn = pymysql.connect(host="localhost", user="root", password="123456", database="seat_recommend",
+                           charset="utf8")
+    # 得到一个可以执行SQL语句的光标对象
+    cursor = conn.cursor()
+    # 座位初始化
+    # 初始化座位信息SQL语句
+    sql1 = "UPDATE seat SET seat_state=0 WHERE fk_classroom_id=%s;"
+    try:
+        # 执行SQL语句
+        cursor.execute(sql1, classroom_id)
+        # 提交事务
+        conn.commit()
+    except Exception as e:
+        # 有异常，回滚事务
+        conn.rollback()
+
+    # 查询数据
+    # 查询数据的SQL语句
+    sql2 = "SELECT id, seat_pic_top, seat_pic_bottom, seat_pic_left, seat_pic_right FROM seat_recommend.seat where " \
+           "seat_pic_left<%s and seat_pic_right>%s and seat_pic_top<%s and seat_pic_bottom>%s and fk_classroom_id=%s;"
+    try:
+        # 执行SQL语句
+        cursor.execute(sql2, [pic_x, pic_x, pic_y, pic_y, classroom_id])
         # 获取多条查询数据
         result = cursor.fetchall()
         cursor.close()

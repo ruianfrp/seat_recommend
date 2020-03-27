@@ -1,7 +1,9 @@
+import math
 import os
 import numpy as np
 import copy
 import colorsys
+import mysql
 from timeit import default_timer as timer
 from keras import backend as K
 from keras.models import load_model
@@ -106,7 +108,7 @@ class YOLO(object):
     # ---------------------------------------------------#
     #   检测图片
     # ---------------------------------------------------#
-    def detect_image(self, image):
+    def detect_image(self, image, classroom_id):
         start = timer()
 
         # 调整图片使其符合输入要求
@@ -149,11 +151,28 @@ class YOLO(object):
             left = max(0, np.floor(left + 0.5).astype('int32'))
             bottom = min(image.size[1], np.floor(bottom + 0.5).astype('int32'))
             right = min(image.size[0], np.floor(right + 0.5).astype('int32'))
+            # print(top, left, bottom, right)
+            point_x = (right + left) / 2
+            point_y = (top + bottom) / 2
 
-            print(top, left, bottom, right)
-            pic_x = (right + left) / 2
-            pic_y = (top + bottom) / 2
-            print(pic_x, pic_y)
+            if predicted_class == 'person':
+                result = mysql.seat_select(point_x, point_y, classroom_id=1)
+                if result.__len__() == 1:
+                    mysql.seat_update(result[0])
+                elif result.__len__() >= 2:
+                    distance = 0.00
+                    r_id = 0
+                    for r in result:
+                        pic_x = (r[3] + r[4]) / 2
+                        pic_y = (r[1] + r[2]) / 2
+                        aa = round(math.sqrt(math.pow((pic_x - point_x)) + math.pow((pic_y - point_y))), 2)
+                        if aa > distance:
+                            r_id = r[0]
+                            distance = aa
+                    if r_id != 0:
+                        mysql.seat_update(r_id)
+                else:
+                    pass
 
             # 画框框
             label = '{} {:.2f}'.format(predicted_class, score)
