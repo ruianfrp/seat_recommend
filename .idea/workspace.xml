@@ -5,8 +5,6 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mysql.py" beforeDir="false" afterPath="$PROJECT_DIR$/mysql.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predict.py" beforeDir="false" afterPath="$PROJECT_DIR$/predict.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolo.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -255,7 +253,10 @@
       <workItem from="1585027385900" duration="2691000" />
       <workItem from="1585123224556" duration="1210000" />
       <workItem from="1585191536278" duration="3174000" />
-      <workItem from="1585281219455" duration="10501000" />
+      <workItem from="1585281219455" duration="11695000" />
+      <workItem from="1585456202889" duration="868000" />
+      <workItem from="1585468379259" duration="1790000" />
+      <workItem from="1585558091471" duration="848000" />
     </task>
     <servers />
   </component>

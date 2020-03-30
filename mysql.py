@@ -73,43 +73,29 @@ def user_select(user_no):
 
 # 添加教室信息（单条）获得添加数据id
 def classroom_insert(classroom_name):
+    result = None
     conn = pymysql.connect(host="localhost", user="root", password="123456", database="seat_recommend",
                            charset="utf8")
     # 得到一个可以执行SQL语句的光标对象
     cursor = conn.cursor()
-    sql = "INSERT INTO classroom(classroom_name) VALUES (%s);"
+    sql = "insert into classroom(classroom_name) select %s from dual where not EXISTS " \
+          "(select classroom_name from classroom where classroom_name=%s);"
     try:
         # 执行SQL语句
-        cursor.execute(sql, [classroom_name])
+        cursor.execute(sql, [classroom_name, classroom_name])
         # 提交事务
         conn.commit()
         # 提交之后，获取刚插入的数据的ID
-        last_id = cursor.lastrowid
+        result = cursor.lastrowid
+        cursor.close()
+        conn.close()
+        return result
     except Exception as e:
         # 有异常，回滚事务
         conn.rollback()
-    cursor.close()
-    conn.close()
-
-
-# 添加教室信息（批量）
-def classroom_insert_many(data):
-    conn = pymysql.connect(host="localhost", user="root", password="123456", database="seat_recommend",
-                           charset="utf8")
-    # 得到一个可以执行SQL语句的光标对象
-    cursor = conn.cursor()
-    sql = "INSERT INTO classroom(classroom_name) VALUES (%s);"
-    # data = [("Alex", 18), ("Egon", 20), ("Yuan", 21)]
-    try:
-        # 批量执行多条插入SQL语句
-        cursor.executemany(sql, data)
-        # 提交事务
-        conn.commit()
-    except Exception as e:
-        # 有异常，回滚事务
-        conn.rollback()
-    cursor.close()
-    conn.close()
+        cursor.close()
+        conn.close()
+        return result
 
 
 # 删除classroom信息

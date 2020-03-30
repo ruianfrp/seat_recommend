@@ -50,6 +50,30 @@ def register():
             return jsonify({"info": info}), 200
 
 
+# 添加教室
+@app.route('/classroom_insert', methods=['POST'])
+def insert_classroom():
+    if request.form['classroom_name'] != 'null':
+        classroom_name = request.form['classroom_name']
+        result = mysql.classroom_insert(classroom_name)
+        if result is None:
+            error = '数据库操作错误!'
+            app.logger.info(error)
+            return jsonify({"error": error}), 403
+        elif result == 0:
+            error = '该教室已存在!'
+            app.logger.info(error)
+            return jsonify({"error": error}), 403
+        else:
+            info = '教室添加成功!'
+            app.logger.info(info)
+            return jsonify({"info": info}), 200
+    else:
+        error = '教室名称返回为空!'
+        app.logger.info(error)
+        return jsonify({"error": error}), 403
+
+
 # 获取教室列表
 @app.route('/classroom_show', methods=['GET'])
 def get_classroom_info():
