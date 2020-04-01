@@ -74,6 +74,26 @@ def insert_classroom():
         return jsonify({"error": error}), 403
 
 
+# 删除教室
+@app.route('/classroom_delete', methods=['POST'])
+def delete_classroom():
+    if request.form['id'] != 'null':
+        classroom_id = request.form['id']
+        result = mysql.classroom_delete(classroom_id)
+        if result == 'False':
+            error = '数据库操作错误!'
+            app.logger.info(error)
+            return jsonify({"error": error}), 403
+        else:
+            info = '教室添加成功!'
+            app.logger.info(info)
+            return jsonify({"info": info}), 200
+    else:
+        error = '教室id返回为空!'
+        app.logger.info(error)
+        return jsonify({"error": error}), 403
+
+
 # 获取教室列表
 @app.route('/classroom_show', methods=['GET'])
 def get_classroom_info():
