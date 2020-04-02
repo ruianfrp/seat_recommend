@@ -1,11 +1,12 @@
 import xml.etree.ElementTree as ET
 from os import getcwd
-
+# 输出设置
 sets = [('2007', 'train'), ('2007', 'val'), ('2007', 'test')]
-
+# 分类
 classes = ["chair", "person"]
 
 
+# 批注转换
 def convert_annotation(year, image_id, list_file):
     in_file = open('VOCdevkit/VOC%s/Annotations/%s.xml' % (year, image_id))
     tree = ET.parse(in_file)
@@ -24,8 +25,9 @@ def convert_annotation(year, image_id, list_file):
         list_file.write(" " + ",".join([str(a) for a in b]) + ',' + str(cls_id))
 
 
+# unicode字符串
 wd = getcwd()
-
+# 写入
 for year, image_set in sets:
     image_ids = open('VOCdevkit/VOC%s/ImageSets/Main/%s.txt' % (year, image_set)).read().strip().split()
     list_file = open('%s_%s.txt' % (year, image_set), 'w')
