@@ -6,7 +6,7 @@ sets = [('2007', 'train'), ('2007', 'val'), ('2007', 'test')]
 classes = ["chair", "person"]
 
 
-# 批注转换
+# 批注转换(提取分类)
 def convert_annotation(year, image_id, list_file):
     in_file = open('VOCdevkit/VOC%s/Annotations/%s.xml' % (year, image_id))
     tree = ET.parse(in_file)
