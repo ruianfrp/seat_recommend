@@ -3,7 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="883beecd-ece1-4f72-a1db-aa4b881616ff" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/voc_annotation.py" beforeDir="false" afterPath="$PROJECT_DIR$/voc_annotation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nets/darknet53.py" beforeDir="false" afterPath="$PROJECT_DIR$/nets/darknet53.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nets/yolo3.py" beforeDir="false" afterPath="$PROJECT_DIR$/nets/yolo3.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -160,6 +161,9 @@
       <module name="Yolov3" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/VOCdevkit/VOC2007" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -179,6 +183,9 @@
       <module name="Yolov3" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -254,6 +261,8 @@
       <workItem from="1585715609789" duration="2077000" />
       <workItem from="1585731129820" duration="1256000" />
       <workItem from="1585818144169" duration="6322000" />
+      <workItem from="1586080947207" duration="1100000" />
+      <workItem from="1586108841802" duration="1902000" />
     </task>
     <servers />
   </component>

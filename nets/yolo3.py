@@ -63,7 +63,7 @@ def yolo_body(inputs, num_anchors, num_classes):
     darknet = Model(inputs, feat3)
 
     # 第一个特征层
-    # y1=(batch_size,13,13,3,85)
+    # y1=(batch_size,13,13,3,25)
     x, y1 = make_last_layers(darknet.output, 512, num_anchors * (num_classes + 5))
 
     x = compose(
@@ -71,7 +71,7 @@ def yolo_body(inputs, num_anchors, num_classes):
         UpSampling2D(2))(x)
     x = Concatenate()([x, feat2])
     # 第二个特征层
-    # y2=(batch_size,26,26,3,85)
+    # y2=(batch_size,26,26,3,25)
     x, y2 = make_last_layers(x, 256, num_anchors * (num_classes + 5))
 
     x = compose(
@@ -79,7 +79,7 @@ def yolo_body(inputs, num_anchors, num_classes):
         UpSampling2D(2))(x)
     x = Concatenate()([x, feat1])
     # 第三个特征层
-    # y3=(batch_size,52,52,3,85)
+    # y3=(batch_size,52,52,3,25)
     x, y3 = make_last_layers(x, 128, num_anchors * (num_classes + 5))
 
     return Model(inputs, [y1, y2, y3])
