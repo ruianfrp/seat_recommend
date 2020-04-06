@@ -3,8 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="883beecd-ece1-4f72-a1db-aa4b881616ff" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model_data/yolo_anchors.txt" beforeDir="false" afterPath="$PROJECT_DIR$/model_data/yolo_anchors.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nets/darknet53.py" beforeDir="false" afterPath="$PROJECT_DIR$/nets/darknet53.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nets/yolo3.py" beforeDir="false" afterPath="$PROJECT_DIR$/nets/yolo3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolo.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -263,6 +264,7 @@
       <workItem from="1585818144169" duration="6322000" />
       <workItem from="1586080947207" duration="1100000" />
       <workItem from="1586108841802" duration="1902000" />
+      <workItem from="1586149823295" duration="2512000" />
     </task>
     <servers />
   </component>
