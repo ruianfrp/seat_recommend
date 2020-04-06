@@ -3,9 +3,9 @@ import tensorflow as tf
 from keras import backend as K
 
 
-#---------------------------------------------------#
+# --------------------------------------------------- #
 #   将预测值的每个特征层调成真实值
-#---------------------------------------------------#
+# --------------------------------------------------- #
 def yolo_head(feats, anchors, num_classes, input_shape, calc_loss=False):
     num_anchors = len(anchors)
     # [1, 1, 1, num_anchors, 2]
@@ -37,9 +37,10 @@ def yolo_head(feats, anchors, num_classes, input_shape, calc_loss=False):
         return grid, feats, box_xy, box_wh
     return box_xy, box_wh, box_confidence, box_class_probs
 
-#---------------------------------------------------#
-#   用于计算每个预测框与真实框的iou
-#---------------------------------------------------#
+
+# --------------------------------------------------- #
+#   用于计算每个预测框与真实框的IOU
+# --------------------------------------------------- #
 def box_iou(b1, b2):
     # 13,13,3,1,4
     # 计算左上角的坐标和右下角的坐标
@@ -70,13 +71,14 @@ def box_iou(b1, b2):
 
     return iou
 
-#---------------------------------------------------#
+
+# --------------------------------------------------- #
 #   loss值计算
-#---------------------------------------------------#
+# --------------------------------------------------- #
 def yolo_loss(args, anchors, num_classes, ignore_thresh=.5, print_loss=False):
 
     # 一共有三层
-    num_layers = len(anchors)//3 
+    num_layers = len(anchors)//3
 
     # 将预测结果和实际ground truth分开，args是[*model_body.output, *y_true]
     # y_true是一个列表，包含三个特征层，shape分别为(m,13,13,3,85),(m,26,26,3,85),(m,52,52,3,85)。
@@ -87,8 +89,8 @@ def yolo_loss(args, anchors, num_classes, ignore_thresh=.5, print_loss=False):
     # 先验框
     # 678为116,90,  156,198,  373,326
     # 345为30,61,  62,45,  59,119
-    # 012为10,13,  16,30,  33,23,  
-    anchor_mask = [[6,7,8], [3,4,5], [0,1,2]] if num_layers==3 else [[3,4,5], [1,2,3]]
+    # 012为10,13,  16,30,  33,23,
+    anchor_mask = [[6, 7, 8], [3, 4, 5], [0, 1, 2]] if num_layers == 3 else [[3, 4, 5], [1, 2, 3]]
 
     # 得到input_shpae为416,416 
     input_shape = K.cast(K.shape(yolo_outputs[0])[1:3] * 32, K.dtype(y_true[0]))
@@ -116,7 +118,7 @@ def yolo_loss(args, anchors, num_classes, ignore_thresh=.5, print_loss=False):
         # 还有解码后的xy，wh，(m,13,13,3,2)
         grid, raw_pred, pred_xy, pred_wh = yolo_head(yolo_outputs[l],
              anchors[anchor_mask[l]], num_classes, input_shape, calc_loss=True)
-        
+
         # 这个是解码后的预测的box的位置
         # (m,13,13,3,4)
         pred_box = K.concatenate([pred_xy, pred_wh])
@@ -124,7 +126,7 @@ def yolo_loss(args, anchors, num_classes, ignore_thresh=.5, print_loss=False):
         # 找到负样本群组，第一步是创建一个数组，[]
         ignore_mask = tf.TensorArray(K.dtype(y_true[0]), size=1, dynamic_size=True)
         object_mask_bool = K.cast(object_mask, 'bool')
-        
+
         # 对每一张图片计算ignore_mask
         def loop_body(b, ignore_mask):
             # 取出第b副图内，真实存在的所有的box的参数
@@ -159,18 +161,18 @@ def yolo_loss(args, anchors, num_classes, ignore_thresh=.5, print_loss=False):
         # object_mask如果真实存在目标则保存其wh值
         # switch接口，就是一个if/else条件判断语句
         raw_true_wh = K.switch(object_mask, raw_true_wh, K.zeros_like(raw_true_wh))
-        box_loss_scale = 2 - y_true[l][...,2:3]*y_true[l][...,3:4]
+        box_loss_scale = 2 - y_true[l][..., 2:3]*y_true[l][..., 3:4]
 
-        xy_loss = object_mask * box_loss_scale * K.binary_crossentropy(raw_true_xy, raw_pred[...,0:2], from_logits=True)
-        wh_loss = object_mask * box_loss_scale * 0.5 * K.square(raw_true_wh-raw_pred[...,2:4])
-        
+        xy_loss = object_mask * box_loss_scale * K.binary_crossentropy(raw_true_xy, raw_pred[..., 0:2], from_logits=True)
+        wh_loss = object_mask * box_loss_scale * 0.5 * K.square(raw_true_wh-raw_pred[..., 2:4])
+
         # 如果该位置本来有框，那么计算1与置信度的交叉熵
         # 如果该位置本来没有框，而且满足best_iou<ignore_thresh，则被认定为负样本
         # best_iou<ignore_thresh用于限制负样本数量
-        confidence_loss = object_mask * K.binary_crossentropy(object_mask, raw_pred[...,4:5], from_logits=True)+ \
-            (1-object_mask) * K.binary_crossentropy(object_mask, raw_pred[...,4:5], from_logits=True) * ignore_mask
-        
-        class_loss = object_mask * K.binary_crossentropy(true_class_probs, raw_pred[...,5:], from_logits=True)
+        confidence_loss = object_mask * K.binary_crossentropy(object_mask, raw_pred[..., 4:5], from_logits=True) + \
+            (1-object_mask) * K.binary_crossentropy(object_mask, raw_pred[..., 4:5], from_logits=True) * ignore_mask
+
+        class_loss = object_mask * K.binary_crossentropy(true_class_probs, raw_pred[..., 5:], from_logits=True)
 
         xy_loss = K.sum(xy_loss) / mf
         wh_loss = K.sum(wh_loss) / mf
