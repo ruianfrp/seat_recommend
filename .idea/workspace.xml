@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="883beecd-ece1-4f72-a1db-aa4b881616ff" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nets/loss.py" beforeDir="false" afterPath="$PROJECT_DIR$/nets/loss.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model_data/voc_classes.txt" beforeDir="false" afterPath="$PROJECT_DIR$/model_data/voc_classes.txt" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -264,6 +264,8 @@
       <workItem from="1586108841802" duration="1902000" />
       <workItem from="1586149823295" duration="3127000" />
       <workItem from="1586184270732" duration="976000" />
+      <workItem from="1586241509855" duration="1407000" />
+      <workItem from="1586242936372" duration="16000" />
     </task>
     <servers />
   </component>
