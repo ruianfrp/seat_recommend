@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, abort
 from flask_cors import CORS
+import token
 import json
 
 import AesCipher
@@ -28,7 +29,8 @@ def login():
         else:
             info = "登陆成功!"
             app.logger.info(info)
-            return jsonify({"code": 200, "info": info}), 200
+            tk = token.Token('classroom', 'classroom', username)
+            return jsonify({"code": 200, "token": tk, "info": info}), 200
     else:
         error = '请填写完整信息!'
         app.logger.error(error)
