@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="883beecd-ece1-4f72-a1db-aa4b881616ff" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model_data/voc_classes.txt" beforeDir="false" afterPath="$PROJECT_DIR$/model_data/voc_classes.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -67,7 +67,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.voc2yolo3">
+  <component name="RunManager" selected="Python.app">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="Yolov3" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -94,9 +94,6 @@
       <module name="Yolov3" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -202,10 +199,10 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.app" />
         <item itemvalue="Python.voc2yolo3" />
         <item itemvalue="Python.voc_annotation" />
         <item itemvalue="Python.predict" />
-        <item itemvalue="Python.app" />
         <item itemvalue="Python.mysql" />
       </list>
     </recent_temporary>
@@ -266,6 +263,7 @@
       <workItem from="1586184270732" duration="976000" />
       <workItem from="1586241509855" duration="1407000" />
       <workItem from="1586242936372" duration="16000" />
+      <workItem from="1586335190857" duration="5009000" />
     </task>
     <servers />
   </component>
