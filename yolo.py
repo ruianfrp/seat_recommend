@@ -154,7 +154,7 @@ class YOLO(object):
             # print(top, left, bottom, right)
             point_x = (right + left) / 2
             point_y = (top + bottom) / 2
-
+            # # 判断是否有人
             # if predicted_class == 'person':
             #     result = mysql.seat_select(point_x, point_y, classroom_id=1)
             #     if result.__len__() == 1:
