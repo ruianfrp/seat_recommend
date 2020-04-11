@@ -1,13 +1,13 @@
 from flask import Flask, request, jsonify, abort
 from flask_cors import CORS
-import token
+from get_token import Token
 import json
 
 import AesCipher
 import mysql
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True)
 
 
 @app.route('/', methods=['GET'])
@@ -18,10 +18,11 @@ def ping_pong():
 # 登录
 @app.route('/login', methods=['POST'])
 def login():
-    if request.form['username'] != 'null' and request.form['password'] != 'null':
-        username = request.form['username']
-        password = request.form['password']
-        cipher = AesCipher.decrypt(mysql.user_select(username))
+    if request.get_json().get('username') != 'null' and request.get_json().get('password') != 'null':
+        username = request.get_json().get('username')
+        pwd = request.get_json().get('password')
+        cipher = mysql.user_select(username)
+        password = str(AesCipher.encryption(pwd), 'utf-8')
         if password != cipher:
             error = '密码错误!'
             app.logger.error(error)
@@ -29,8 +30,8 @@ def login():
         else:
             info = "登陆成功!"
             app.logger.info(info)
-            tk = token.Token('classroom', 'classroom', username)
-            return jsonify({"code": 200, "token": tk, "info": info}), 200
+            tk = Token('classroom', 'classroom', username)
+            return jsonify({"code": 200, "info": info}), 200
     else:
         error = '请填写完整信息!'
         app.logger.error(error)
@@ -219,4 +220,4 @@ def get_special_seat_info():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(threaded=True, debug=True)

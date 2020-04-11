@@ -38,6 +38,6 @@ def decrypt(encrypted_text):
 
 if __name__ == '__main__':
     a = encryption('hello')
-    print(a)
+    print(str(a, 'utf-8'))
     b = decrypt(a)
     print(b)

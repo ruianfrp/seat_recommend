@@ -29,7 +29,7 @@ def user_insert(username, password):
     sql = "insert into user(user_no,password) select %s,%s from dual where not EXISTS " \
           "(select user_no from user where user_no=%s);"
     if password != 'null':
-        cipher = AesCipher.encryption(password)
+        cipher = str(AesCipher.encryption(password), 'utf-8')
         # print(cipher)
     try:
         # 执行SQL语句
@@ -65,7 +65,6 @@ def user_select(user_no):
     except Exception as e:
         # 有异常，回滚事务
         conn.rollback()
-        # print(e)
     cursor.close()
     conn.close()
     return ret[0]
@@ -344,4 +343,5 @@ def seat_select(pic_x, pic_y, classroom_id):
 
 
 if __name__ == "__main__":
-    classroom_select()
+    # user_insert("ccc", "Ab123456")
+    print(user_select("aaa") == str(AesCipher.encryption("Ab123456"), 'utf-8'))
