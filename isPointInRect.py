@@ -11,7 +11,7 @@ class isPointInRect(object):
         cross_product_bc = isPointInRect().cross_product(xp, yp, xb, yb, xc, yc)
         cross_product_cd = isPointInRect().cross_product(xp, yp, xc, yc, xd, yd)
         cross_product_da = isPointInRect().cross_product(xp, yp, xd, yd, xa, ya)
-        return cross_product_ab,cross_product_bc,cross_product_cd,cross_product_da
+        return cross_product_ab, cross_product_bc, cross_product_cd, cross_product_da
 
     def is_in_rect(self, aa, bb, cc, dd):
         if (aa > 0 and bb > 0 and cc > 0 and dd > 0) or (aa < 0 and bb < 0 and cc < 0 and dd < 0):
