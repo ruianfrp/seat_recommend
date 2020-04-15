@@ -1,12 +1,10 @@
-# yolo3-keras
-这是一个yolo3-keras的源码，可以用于训练自己的模型。
- 
 # 训练步骤
-1、本文使用VOC格式进行训练。  
+1、本文使用VOC2007格式进行训练。  
 2、训练前将标签文件放在VOCdevkit文件夹下的VOC2007文件夹下的Annotation中。  
 3、训练前将图片文件放在VOCdevkit文件夹下的VOC2007文件夹下的JPEGImages中。  
 4、在训练前利用voc2yolo3.py文件生成对应的txt。  
 5、再运行根目录下的voc_annotation.py，运行前需要将classes改成你自己的classes。  
+
 ```python
 classes = ["aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable", "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"]
 ```
@@ -21,3 +19,5 @@ classes = ["aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat"
     - numpy 1.16.0
     - cuda 9.0
     - cudnn 7.0.5
+    - pymysql 8.0.18
+    - flask 0.11.1
