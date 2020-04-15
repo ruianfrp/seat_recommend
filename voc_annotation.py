@@ -3,7 +3,7 @@ from os import getcwd
 # 输出设置
 sets = [('2007', 'train'), ('2007', 'val'), ('2007', 'test')]
 # 分类
-classes = ["chair", "person"]
+classes = ["person"]
 
 
 # 批注转换(提取分类)
