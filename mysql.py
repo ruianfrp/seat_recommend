@@ -11,9 +11,10 @@ def mysql_login():
         db = pymysql.connect(host="localhost", user="root", password="123456", database="seat_recommend",
                              charset="utf8")
         cursor = db.cursor()  # 数据游标
-        ret = cursor.execute("select * from classroom;")
-        print("密码正确")
-        print("{} rows in set.".format(ret))
+        cursor.execute("select version();")
+        data = cursor.fetchone()
+        print(data)
+        # print("{} rows in set.".format(ret))
         db.close()  # 关闭数据库
     except:
         print("密码错误")
@@ -54,12 +55,11 @@ def user_select(user_no):
     global ret
     conn = pymysql.connect(host="localhost", user="root", password="123456", database="seat_recommend",
                            charset="utf8")
-    # 得到一个可以执行SQL语句的光标对象
     cursor = conn.cursor()
     # 查询数据的SQL语句
     sql = "SELECT password from user WHERE user_no=%s;"
     try:
-        # 执行SQL语句
+        # 执行SQL语句（防止注入）
         cursor.execute(sql, user_no)
         ret = cursor.fetchone()
     except Exception as e:
@@ -344,4 +344,5 @@ def seat_select(pic_x, pic_y, classroom_id):
 
 if __name__ == "__main__":
     # user_insert("ccc", "Ab123456")
-    print(user_select("aaa") == str(AesCipher.encryption("Ab123456"), 'utf-8'))
+    # print(user_select("aaa") == str(AesCipher.encryption("Ab123456"), 'utf-8'))
+    mysql_login()

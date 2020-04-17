@@ -132,6 +132,7 @@ config.gpu_options.per_process_gpu_memory_fraction = 0.7
 config.gpu_options.allow_growth = True
 set_session(tf.Session(config=config))
 
+
 if __name__ == "__main__":
     # 标签的位置
     annotation_path = '2007_train.txt'

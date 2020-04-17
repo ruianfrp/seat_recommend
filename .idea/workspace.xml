@@ -3,11 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="883beecd-ece1-4f72-a1db-aa4b881616ff" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AesCipher.py" beforeDir="false" afterPath="$PROJECT_DIR$/AesCipher.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mysql.py" beforeDir="false" afterPath="$PROJECT_DIR$/mysql.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/token.py" beforeDir="false" afterPath="$PROJECT_DIR$/get_token.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolo.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/train.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -71,11 +68,14 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.mysql">
+  <component name="RunManager" selected="Python.voc2yolo3">
     <configuration name="AesCipher" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Yolov3" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -158,9 +158,6 @@
       <module name="Yolov3" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/VOCdevkit/VOC2007" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -180,9 +177,6 @@
       <module name="Yolov3" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -200,11 +194,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.voc2yolo3" />
+        <item itemvalue="Python.voc_annotation" />
         <item itemvalue="Python.mysql" />
         <item itemvalue="Python.AesCipher" />
         <item itemvalue="Python.app" />
-        <item itemvalue="Python.voc2yolo3" />
-        <item itemvalue="Python.voc_annotation" />
       </list>
     </recent_temporary>
   </component>
@@ -271,6 +265,10 @@
       <workItem from="1586403726493" duration="10857000" />
       <workItem from="1586509498205" duration="1048000" />
       <workItem from="1586600895393" duration="2029000" />
+      <workItem from="1586617777378" duration="381000" />
+      <workItem from="1586618184656" duration="82000" />
+      <workItem from="1586751799817" duration="4323000" />
+      <workItem from="1586934812920" duration="2470000" />
     </task>
     <servers />
   </component>
