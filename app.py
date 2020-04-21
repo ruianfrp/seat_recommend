@@ -41,9 +41,9 @@ def login():
 # 注册
 @app.route('/register', methods=['POST'])
 def register():
-    if request.form['username'] != 'null' and request.form['password'] != 'null':
-        username = request.form['username']
-        password = request.form['password']
+    if request.get_json().get('username') != 'null' and request.get_json().get('password') != 'null':
+        username = request.get_json().get('username')
+        password = request.get_json().get('password')
         return_id = mysql.user_insert(username, password)
         if return_id == 0:
             error = '已存在此用户'
