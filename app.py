@@ -5,6 +5,8 @@ import json
 
 import AesCipher
 import mysql
+from yolo import YOLO
+from PIL import Image
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
@@ -62,8 +64,8 @@ def register():
 # 添加教室
 @app.route('/classroom_insert', methods=['POST'])
 def insert_classroom():
-    if request.form['classroom_name'] != 'null':
-        classroom_name = request.form['classroom_name']
+    if request.get_json().get('classroom_name') != 'null':
+        classroom_name = request.get_json().get('classroom_name')
         result = mysql.classroom_insert(classroom_name)
         if result is None:
             error = '数据库操作错误!'
@@ -86,8 +88,8 @@ def insert_classroom():
 # 删除教室
 @app.route('/classroom_delete', methods=['POST'])
 def delete_classroom():
-    if request.form['id'] != 'null':
-        classroom_id = request.form['id']
+    if request.get_json().get('id') != 'null':
+        classroom_id = request.get_json().get('id')
         result = mysql.classroom_delete(classroom_id)
         if result == 'False':
             error = '数据库操作错误!'
@@ -131,8 +133,21 @@ def get_classroom_info():
 # 获取实时教室座位信息
 @app.route('/seat_real', methods=['POST'])
 def get_real_seat_info():
-    if request.form['classroom_id'] != 'null':
-        classroom_id = request.form['classroom_id']
+    if request.get_json().get('classroom_id') != 'null':
+        classroom_id = request.get_json().get('classroom_id')
+        # 调用预测模型进行预测
+        yolo = YOLO()
+        try:
+            image = Image.open("D:/SourceTree/yolov3/img/" + classroom_id + ".jpg")
+        except:
+            app.logger.error("图片打开失败!")
+            return jsonify({"code": 403, "error": "图片打开失败!"}), 403
+        else:
+            yolo.detect_image(image, classroom_id)
+        app.logger.info("教室" + classroom_id + "座位实时获取成功!")
+        yolo.close_session()
+
+        # 返回座位信息
         result = mysql.seat_select(classroom_id)
         if result is None:
             app.logger.error("数据库操作异常!")

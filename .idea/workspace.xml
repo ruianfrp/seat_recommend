@@ -4,6 +4,7 @@
     <list default="true" id="883beecd-ece1-4f72-a1db-aa4b881616ff" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolo.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -279,6 +280,11 @@
       <workItem from="1586934812920" duration="2470000" />
       <workItem from="1587111615799" duration="7471000" />
       <workItem from="1587356905787" duration="2647000" />
+      <workItem from="1587461333794" duration="748000" />
+      <workItem from="1587707571588" duration="2083000" />
+      <workItem from="1587714889233" duration="759000" />
+      <workItem from="1587719703361" duration="917000" />
+      <workItem from="1587720807174" duration="752000" />
     </task>
     <servers />
   </component>
