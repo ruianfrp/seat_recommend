@@ -122,12 +122,58 @@ def get_classroom_info():
             classroom = {
                 'id': r[0],
                 'classroomName': r[1],
-                'seatNum': r[2]
+                'seatNum': r[2],
+                'freeSeatNum': r[3],
+                'classroomInfo': r[4]
             }
             classrooms.append(classroom)
         data['classrooms'] = classrooms
         app.logger.info("教室信息返回成功!")
         return jsonify({"code": 200, "data": data, "info": "教室信息返回成功!"}), 200
+
+
+# 获取座位数量
+@app.route('/seat_num_get', methods=['get'])
+def seat_num_get():
+    result1 = mysql.count_seat_select()
+    if result1 is None:
+        app.logger.error("数据库操作异常!")
+        return jsonify({"code": 403, "error": "数据库操作异常!"}), 403
+    elif result1.__len__() == 0:
+        app.logger.error("搜索数据为空!")
+        return jsonify({"code": 403, "error": "搜索数据为空!"}), 403
+    else:
+        result2 = mysql.count_free_seat()
+        if result2 is None:
+            app.logger.error("数据库操作异常!")
+            return jsonify({"code": 403, "error": "数据库操作异常!"}), 403
+        elif result2[0] == 0:
+            app.logger.error("搜索数据为空!")
+            return jsonify({"code": 403, "error": "搜索数据为空!"}), 403
+        else:
+            data = {}
+            seatNums = []
+            for r in result1:
+                if r[0] == 0:
+                    seatNum = {
+                        'seatPlace': '普通',
+                        'counts': r[1]
+                    }
+                elif r[0] == 1:
+                    seatNum = {
+                        'seatPlace': '靠窗',
+                        'counts': r[1]
+                    }
+                else:
+                    seatNum = {
+                        'seatPlace': '靠门',
+                        'counts': r[1]
+                    }
+                seatNums.append(seatNum)
+            data['allSeatNum'] = result2[0]
+            data['seatNums'] = seatNums
+            app.logger.info("教室信息返回成功!")
+            return jsonify({"code": 200, "data": data, "info": "教室信息返回成功!"}), 200
 
 
 # 获取实时教室座位信息

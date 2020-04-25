@@ -123,24 +123,6 @@ def classroom_delete(classroom_id):
         return result
 
 
-# 删除classroom信息
-def classroom_delete(classroom_id):
-    conn = pymysql.connect(host="localhost", user="root", password="123456", database="seat_recommend",
-                           charset="utf8")
-    # 得到一个可以执行SQL语句的光标对象
-    cursor = conn.cursor()
-    sql = "DELETE FROM classroom WHERE id=%s;"
-    try:
-        cursor.execute(sql, [classroom_id])
-        # 提交事务
-        conn.commit()
-    except Exception as e:
-        # 有异常，回滚事务
-        conn.rollback()
-    cursor.close()
-    conn.close()
-
-
 # 修改教室信息
 def classroom_update(classroom_name, classroom_id):
     conn = pymysql.connect(host="localhost", user="root", password="123456", database="seat_recommend",
@@ -210,7 +192,58 @@ def classroom_select():
     # 得到一个可以执行SQL语句的光标对象
     cursor = conn.cursor()
     # 查询数据的SQL语句
-    sql = "SELECT id, classroom_name, seat_num from classroom;"
+    sql = "SELECT c.id, c.classroom_name, c.seat_num, count(s.id) as free_seat_num, c.classroom_info from " \
+          "classroom as c left join seat as s on c.id=s.fk_classroom_id where s.seat_state=0 group by c.id;"
+    try:
+        # 执行SQL语句
+        cursor.execute(sql)
+        # 获取多条查询数据
+        result = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return result
+    except Exception as e:
+        # 有异常，回滚事务
+        conn.rollback()
+        cursor.close()
+        conn.close()
+        return result
+
+
+# 剩余位置总数获取
+def count_free_seat():
+    result = None
+    conn = pymysql.connect(host="localhost", user="root", password="123456", database="seat_recommend",
+                           charset="utf8")
+    # 得到一个可以执行SQL语句的光标对象
+    cursor = conn.cursor()
+    # 查询数据的SQL语句
+    sql = "SELECT count(id) FROM seat where seat_state=0;"
+    try:
+        # 执行SQL语句
+        cursor.execute(sql)
+        # 获取多条查询数据
+        result = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        return result
+    except Exception as e:
+        # 有异常，回滚事务
+        conn.rollback()
+        cursor.close()
+        conn.close()
+        return result
+
+
+# 特殊座位总数获取
+def count_seat_select():
+    result = None
+    conn = pymysql.connect(host="localhost", user="root", password="123456", database="seat_recommend",
+                           charset="utf8")
+    # 得到一个可以执行SQL语句的光标对象
+    cursor = conn.cursor()
+    # 查询数据的SQL语句
+    sql = "SELECT seat_place,count(1) as counts FROM seat_recommend.seat where seat_state=0 group by seat_place;"
     try:
         # 执行SQL语句
         cursor.execute(sql)
