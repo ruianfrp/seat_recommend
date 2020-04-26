@@ -172,8 +172,8 @@ def seat_num_get():
                 seatNums.append(seatNum)
             data['allSeatNum'] = result2[0]
             data['seatNums'] = seatNums
-            app.logger.info("教室信息返回成功!")
-            return jsonify({"code": 200, "data": data, "info": "教室信息返回成功!"}), 200
+            app.logger.info("座位位置及数量返回成功!")
+            return jsonify({"code": 200, "data": data, "info": "座位位置及数量返回成功!"}), 200
 
 
 # 获取实时教室座位信息
