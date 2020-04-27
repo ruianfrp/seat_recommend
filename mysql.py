@@ -57,11 +57,11 @@ def user_select(user_no):
                            charset="utf8")
     cursor = conn.cursor()
     # 查询数据的SQL语句
-    sql = "SELECT password from user WHERE user_no=%s;"
+    sql = "SELECT id, user_no, password, user_role from user WHERE user_no=%s;"
     try:
         # 执行SQL语句（防止注入）
         cursor.execute(sql, user_no)
-        ret = cursor.fetchone()
+        ret = cursor.fetchall()
     except Exception as e:
         # 有异常，回滚事务
         conn.rollback()
