@@ -1,35 +1,25 @@
-import hashlib
-import time
-import base64
-import hmac
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 
-def generate_token(key, expire=3600):
-    ts_str = str(time.time() + expire)
-    ts_byte = ts_str.encode("utf-8")
-    sha1_tshexstr = hmac.new(key.encode("utf-8"), ts_byte, 'sha1').hexdigest()
-    token = ts_str + ':' + sha1_tshexstr
-    b64_token = base64.urlsafe_b64encode(token.encode("utf-8"))
-    return b64_token.decode("utf-8")
+def create_token(user_id):
+    s = Serializer("classroom", expires_in=3600)
+    # 接收用户id转换与编码
+    authorization = s.dumps({"id": user_id}).decode("ascii")
+    return authorization
 
 
-def certify_token(key, token):
-    token_str = base64.urlsafe_b64decode(token).decode('utf-8')
-    token_list = token_str.split(':')
-    if len(token_list) != 2:
-        return False
-    ts_str = token_list[0]
-    if float(ts_str) < time.time():
-        return False
-    known_sha1_tsstr = token_list[1]
-    sha1 = hmac.new(key.encode("utf-8"), ts_str.encode('utf-8'), 'sha1')
-    calc_sha1_tsstr = sha1.hexdigest()
-    if calc_sha1_tsstr != known_sha1_tsstr:
-        return False
-    return True
+def verify_token(authorization):
+    s = Serializer("classroom")
+    try:
+        # 转换为字典
+        data = s.loads(authorization)
+    except Exception:
+        return None
+        # 拿到转换后的数据，根据模型类去数据库查询用户信息
+    return data["id"]
 
 
 if __name__ == '__main__':
-    token = generate_token("classroom", 3600)   #调用token对象
+    token = create_token("aaaaaaaaaaa")   #调用token对象
     print(token)
-    print(certify_token("classroom", token))
+    print(verify_token(token))

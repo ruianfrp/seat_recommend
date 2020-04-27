@@ -1,15 +1,36 @@
-from flask import Flask, request, jsonify, abort
+from flask import Flask, request, jsonify, abort, current_app
 from flask_cors import CORS
+from itsdangerous import Serializer
+
 import token_authorization
 import json
 
 import AesCipher
 import mysql
+import functools
 from yolo import YOLO
 from PIL import Image
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
+
+
+# 在上面的基础上导入
+def login_required(view_func):
+    @functools.wraps(view_func)
+    def verify_token(*args, **kwargs):
+        try:
+            # 在请求头上拿到token
+            token = request.headers["Authorization"]
+        except Exception:
+            return jsonify(code=401, msg='缺少参数token')
+        s = Serializer("classroom")
+        try:
+            s.loads(token)
+        except Exception:
+            return jsonify(code=401, msg="登录已过期")
+        return view_func(*args, **kwargs)
+    return verify_token
 
 
 @app.route('/', methods=['GET'])
@@ -23,17 +44,26 @@ def login():
     if request.get_json().get('username') != 'null' and request.get_json().get('password') != 'null':
         username = request.get_json().get('username')
         pwd = request.get_json().get('password')
-        cipher = mysql.user_select(username)
+        result = mysql.user_select(username)
+        print(result[2])
         password = str(AesCipher.encryption(pwd), 'utf-8')
-        if password != cipher:
+        if password != result[2]:
             error = '密码错误!'
             app.logger.error(error)
             return jsonify({"code": 403, "error": error}), 403
         else:
             info = "登陆成功!"
             app.logger.info(info)
-            tk = token_authorization.generate_token(username, 3600)
-            return jsonify({"code": 200, "info": info, "token": tk}), 200
+            tk = token_authorization.create_token(username)
+            data = {}
+            user = {
+                'id': result[0],
+                'userName': username,
+                'userRole': result[3]
+            }
+            data['userInfo'] = user
+            data['token'] = tk
+            return jsonify({"code": 200, "data": data, "info": info}), 200
     else:
         error = '请填写完整信息!'
         app.logger.error(error)
@@ -108,6 +138,8 @@ def delete_classroom():
 # 获取教室列表
 @app.route('/classroom_show', methods=['GET'])
 def get_classroom_info():
+    token = request.headers["Authorization"]
+    print(token)
     result = mysql.classroom_select()
     if result is None:
         app.logger.error("数据库操作异常!")
