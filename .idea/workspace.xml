@@ -5,7 +5,6 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mysql.py" beforeDir="false" afterPath="$PROJECT_DIR$/mysql.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/token_authorization.py" beforeDir="false" afterPath="$PROJECT_DIR$/token_authorization.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -140,6 +139,9 @@
       <module name="Yolov3" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -286,6 +288,7 @@
       <workItem from="1587795789865" duration="13599000" />
       <workItem from="1587888082658" duration="6770000" />
       <workItem from="1587968955855" duration="7668000" />
+      <workItem from="1588053488779" duration="4215000" />
     </task>
     <servers />
   </component>

@@ -94,8 +94,8 @@ def register():
 # 添加教室
 @app.route('/classroom_insert', methods=['POST'])
 def insert_classroom():
-    if request.get_json().get('classroom_name') != 'null':
-        classroom_name = request.get_json().get('classroom_name')
+    if request.get_json().get('classroomName') != 'null':
+        classroom_name = request.get_json().get('classroomName')
         result = mysql.classroom_insert(classroom_name)
         if result is None:
             error = '数据库操作错误!'
@@ -106,7 +106,7 @@ def insert_classroom():
             app.logger.info(error)
             return jsonify({"code": 403, "error": error}), 403
         else:
-            info = '教室添加成功!'
+            info = classroom_name + '教室添加成功!'
             app.logger.info(info)
             return jsonify({"code": 200, "info": info}), 200
     else:
@@ -138,8 +138,8 @@ def delete_classroom():
 # 获取教室列表
 @app.route('/classroom_show', methods=['GET'])
 def get_classroom_info():
-    token = request.headers["Authorization"]
-    print(token)
+    # token = request.headers["Authorization"]
+    # print(token)
     result = mysql.classroom_select()
     if result is None:
         app.logger.error("数据库操作异常!")

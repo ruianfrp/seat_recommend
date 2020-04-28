@@ -77,8 +77,8 @@ def classroom_insert(classroom_name):
                            charset="utf8")
     # 得到一个可以执行SQL语句的光标对象
     cursor = conn.cursor()
-    sql = "insert into classroom(classroom_name) select %s from dual where not EXISTS " \
-          "(select classroom_name from classroom where classroom_name=%s);"
+    sql = "insert into classroom(classroom_name) select %s from dual where not " \
+          "EXISTS (select classroom_name from classroom where classroom_name=%s);"
     try:
         # 执行SQL语句
         cursor.execute(sql, [classroom_name, classroom_name])
@@ -192,8 +192,8 @@ def classroom_select():
     # 得到一个可以执行SQL语句的光标对象
     cursor = conn.cursor()
     # 查询数据的SQL语句
-    sql = "SELECT c.id, c.classroom_name, c.seat_num, count(s.id) as free_seat_num, c.classroom_info from " \
-          "classroom as c left join seat as s on c.id=s.fk_classroom_id where s.seat_state=0 group by c.id;"
+    sql = "SELECT c.id, c.classroom_name, c.seat_num,(select count(s.id) from seat as s where " \
+          "s.fk_classroom_id=c.id and seat_state=0) as free_seat_num,classroom_info FROM classroom as c;"
     try:
         # 执行SQL语句
         cursor.execute(sql)
