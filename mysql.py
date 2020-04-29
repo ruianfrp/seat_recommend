@@ -71,17 +71,17 @@ def user_select(user_no):
 
 
 # 添加教室信息（单条）获得添加数据id
-def classroom_insert(classroom_name):
+def classroom_insert(classroom_name, seat_nums, classroom_info):
     result = None
     conn = pymysql.connect(host="localhost", user="root", password="123456", database="seat_recommend",
                            charset="utf8")
     # 得到一个可以执行SQL语句的光标对象
     cursor = conn.cursor()
-    sql = "insert into classroom(classroom_name) select %s from dual where not " \
-          "EXISTS (select classroom_name from classroom where classroom_name=%s);"
+    sql = "insert into classroom(classroom_name,seat_num,classroom_info) select %s,%s,%s from dual " \
+          "where not EXISTS (select classroom_name from classroom where classroom_name=%s);"
     try:
         # 执行SQL语句
-        cursor.execute(sql, [classroom_name, classroom_name])
+        cursor.execute(sql, [classroom_name, seat_nums, classroom_info, classroom_name])
         # 提交事务
         conn.commit()
         # 提交之后，获取刚插入的数据的ID
@@ -124,23 +124,29 @@ def classroom_delete(classroom_id):
 
 
 # 修改教室信息
-def classroom_update(classroom_name, classroom_id):
+def classroom_update(seat_num, classroom_info, classroom_id):
+    result = 'False'
     conn = pymysql.connect(host="localhost", user="root", password="123456", database="seat_recommend",
                            charset="utf8")
     # 得到一个可以执行SQL语句的光标对象
     cursor = conn.cursor()
     # 修改数据的SQL语句
-    sql = "UPDATE classroom SET classroom_name=%s WHERE id=%s;"
+    sql = "UPDATE classroom SET seat_num=%s, classroom_info=%s WHERE id=%s;"
     try:
         # 执行SQL语句
-        cursor.execute(sql, [classroom_name, classroom_id])
+        cursor.execute(sql, [seat_num, classroom_info, classroom_id])
         # 提交事务
         conn.commit()
+        cursor.close()
+        conn.close()
+        result = 'True'
+        return result
     except Exception as e:
         # 有异常，回滚事务
         conn.rollback()
-    cursor.close()
-    conn.close()
+        cursor.close()
+        conn.close()
+        return result
 
 
 # 添加座位信息（批量）

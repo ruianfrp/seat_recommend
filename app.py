@@ -94,25 +94,30 @@ def register():
 # 添加教室
 @app.route('/classroom_insert', methods=['POST'])
 def insert_classroom():
-    if request.get_json().get('classroomName') != 'null':
+    if request.get_json().get('classroomName') is not None and \
+            request.get_json().get('seatNums') is not None and \
+            request.get_json().get('classroomInfo') is not None:
+        print(request.get_json().get('classroomName'))
         classroom_name = request.get_json().get('classroomName')
-        result = mysql.classroom_insert(classroom_name)
+        seat_nums = request.get_json().get('seatNums')
+        classroom_info = request.get_json().get('classroomInfo')
+        result = mysql.classroom_insert(classroom_name, seat_nums, classroom_info)
         if result is None:
             error = '数据库操作错误!'
             app.logger.info(error)
-            return jsonify({"code": 403, "error": error}), 403
+            return jsonify({"code": 403, "error": error})
         elif result == 0:
             error = '该教室已存在!'
             app.logger.info(error)
-            return jsonify({"code": 403, "error": error}), 403
+            return jsonify({"code": 403, "error": error})
         else:
             info = classroom_name + '教室添加成功!'
             app.logger.info(info)
-            return jsonify({"code": 200, "info": info}), 200
+            return jsonify({"code": 200, "info": info})
     else:
-        error = '教室名称返回为空!'
+        error = '教室信息不得为空!'
         app.logger.info(error)
-        return jsonify({"code": 403, "error": error}), 403
+        return jsonify({"code": 403, "error": error})
 
 
 # 删除教室
@@ -124,29 +129,48 @@ def delete_classroom():
         if result == 'False':
             error = '数据库操作错误!'
             app.logger.info(error)
-            return jsonify({"code": 403, "error": error}), 403
+            return jsonify({"code": 403, "error": error})
         else:
-            info = '教室添加成功!'
+            info = '教室删除成功!'
             app.logger.info(info)
-            return jsonify({"code": 200, "info": info}), 200
+            return jsonify({"code": 200, "info": info})
     else:
         error = '教室id返回为空!'
         app.logger.info(error)
-        return jsonify({"code": 403, "error": error}), 403
+        return jsonify({"code": 403, "error": error})
+
+
+@app.route('/classroom_update', methods=['POST'])
+def update_classroom():
+    if request.get_json().get('seatNums') is not None or request.get_json().get('classroomInfo') is not None:
+        seat_num = request.get_json().get('seatNums')
+        classroom_info = request.get_json().get('classroomInfo')
+        classroom_id = request.get_json().get('id')
+        result = mysql.classroom_update(seat_num, classroom_info, classroom_id)
+        if result == 'False':
+            error = '数据库操作错误!'
+            app.logger.info(error)
+            return jsonify({"code": 403, "error": error})
+        else:
+            info = '教室信息修改成功!'
+            app.logger.info(info)
+            return jsonify({"code": 200, "info": info})
+    else:
+        error = '返回参数不得全为空!'
+        app.logger.info(error)
+        return jsonify({"code": 403, "error": error})
 
 
 # 获取教室列表
 @app.route('/classroom_show', methods=['GET'])
 def get_classroom_info():
-    # token = request.headers["Authorization"]
-    # print(token)
     result = mysql.classroom_select()
     if result is None:
         app.logger.error("数据库操作异常!")
-        return jsonify({"code": 403, "error": "数据库操作异常!"}), 403
+        return jsonify({"code": 403, "error": "数据库操作异常!"})
     elif result.__len__() == 0:
         app.logger.error("搜索数据为空!")
-        return jsonify({"code": 403, "error": "搜索数据为空!"}), 403
+        return jsonify({"code": 403, "error": "搜索数据为空!"})
     else:
         data = {}
         classrooms = []
@@ -161,7 +185,7 @@ def get_classroom_info():
             classrooms.append(classroom)
         data['classrooms'] = classrooms
         app.logger.info("教室信息返回成功!")
-        return jsonify({"code": 200, "data": data, "info": "教室信息返回成功!"}), 200
+        return jsonify({"code": 200, "data": data, "info": "教室信息返回成功!"})
 
 
 # 获取座位数量
@@ -170,18 +194,18 @@ def seat_num_get():
     result1 = mysql.count_seat_select()
     if result1 is None:
         app.logger.error("数据库操作异常!")
-        return jsonify({"code": 403, "error": "数据库操作异常!"}), 403
+        return jsonify({"code": 403, "error": "数据库操作异常!"})
     elif result1.__len__() == 0:
         app.logger.error("搜索数据为空!")
-        return jsonify({"code": 403, "error": "搜索数据为空!"}), 403
+        return jsonify({"code": 403, "error": "搜索数据为空!"})
     else:
         result2 = mysql.count_free_seat()
         if result2 is None:
             app.logger.error("数据库操作异常!")
-            return jsonify({"code": 403, "error": "数据库操作异常!"}), 403
+            return jsonify({"code": 403, "error": "数据库操作异常!"})
         elif result2[0] == 0:
             app.logger.error("搜索数据为空!")
-            return jsonify({"code": 403, "error": "搜索数据为空!"}), 403
+            return jsonify({"code": 403, "error": "搜索数据为空!"})
         else:
             data = {}
             seatNums = []
