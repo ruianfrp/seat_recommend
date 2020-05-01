@@ -180,6 +180,7 @@ def get_classroom_info():
                 'classroomName': r[1],
                 'seatNum': r[2],
                 'freeSeatNum': r[3],
+                'placeFreeSeat': 0,
                 'classroomInfo': r[4]
             }
             classrooms.append(classroom)
@@ -191,45 +192,35 @@ def get_classroom_info():
 # 获取座位数量
 @app.route('/seat_num_get', methods=['get'])
 def seat_num_get():
-    result1 = mysql.count_seat_select()
-    if result1 is None:
+    result1, result2, result3, result4 = mysql.count_seat_select()
+    if result1 is None or result2 is None or result3 is None or result4 is None:
         app.logger.error("数据库操作异常!")
         return jsonify({"code": 403, "error": "数据库操作异常!"})
-    elif result1.__len__() == 0:
-        app.logger.error("搜索数据为空!")
-        return jsonify({"code": 403, "error": "搜索数据为空!"})
     else:
-        result2 = mysql.count_free_seat()
-        if result2 is None:
-            app.logger.error("数据库操作异常!")
-            return jsonify({"code": 403, "error": "数据库操作异常!"})
-        elif result2[0] == 0:
-            app.logger.error("搜索数据为空!")
-            return jsonify({"code": 403, "error": "搜索数据为空!"})
-        else:
-            data = {}
-            seatNums = []
-            for r in result1:
-                if r[0] == 0:
-                    seatNum = {
-                        'seatPlace': '普通',
-                        'counts': r[1]
-                    }
-                elif r[0] == 1:
-                    seatNum = {
-                        'seatPlace': '靠窗',
-                        'counts': r[1]
-                    }
-                else:
-                    seatNum = {
-                        'seatPlace': '靠门',
-                        'counts': r[1]
-                    }
-                seatNums.append(seatNum)
-            data['allSeatNum'] = result2[0]
-            data['seatNums'] = seatNums
-            app.logger.info("座位位置及数量返回成功!")
-            return jsonify({"code": 200, "data": data, "info": "座位位置及数量返回成功!"}), 200
+        data = {}
+        seatNums = []
+        seatNum1 = {
+            'seatPlaceNo': 0,
+            'seatPlace': '普通',
+            'counts': result1[0]
+        }
+        seatNums.append(seatNum1)
+        seatNum2 = {
+            'seatPlaceNo': 1,
+            'seatPlace': '靠窗',
+            'counts': result2[0]
+        }
+        seatNums.append(seatNum2)
+        seatNum3 = {
+            'seatPlaceNo': 2,
+            'seatPlace': '靠门',
+            'counts': result3[0]
+        }
+        seatNums.append(seatNum3)
+        data['allSeatNum'] = result4[0]
+        data['seatNums'] = seatNums
+        app.logger.info("座位位置及数量返回成功!")
+        return jsonify({"code": 200, "data": data, "info": "座位位置及数量返回成功!"}), 200
 
 
 # 获取实时教室座位信息
@@ -278,32 +269,36 @@ def get_real_seat_info():
 # 教室页面特殊位置搜索
 @app.route('/classroom_special', methods=['POST'])
 def get_special_classroom_info():
-    if request.form['seat_place'] != 'null':
-        seat_place = request.form['seat_place']
-        result = mysql.classroom_special_select(seat_place)
+    if request.get_json().get('seatPlace') != 'null':
+        seatPlace = request.get_json().get('seatPlace')
+        result = mysql.classroom_special_select(seatPlace)
         if result is None:
             app.logger.error("数据库操作异常!")
-            return jsonify({"code": 403, "error": "数据库操作异常!"}), 403
-        elif result.__len__() == 0:
-            app.logger.info("所有教室已无此类型座位!")
-            return jsonify({"code": 200, "info": "所有教室已无此类型座位!"}), 200
+            return jsonify({"code": 403, "error": "数据库操作异常!"})
         else:
             data = {}
             classrooms = []
             for r in result:
-                classroom = {
-                    'classroom_id': r[0],
-                    'seat_num': r[1],
-                    'seat_free': r[2]
-                }
-                classrooms.append(classroom)
+                if r[4] != 0:
+                    classroom = {
+                        'id': r[0],
+                        'classroomName': r[1],
+                        'seatNum': r[2],
+                        'freeSeatNum': r[3],
+                        'placeFreeSeat': r[4],
+                        'classroomInfo': r[5]
+                    }
+                    classrooms.append(classroom)
+            if len(classrooms) == 0:
+                app.logger.info("所有教室已无此类型座位!")
+                return jsonify({"code": 400, "info": "所有教室已无此类型座位!"})
             data['classrooms'] = classrooms
-            app.logger.info("教室信息返回成功!")
-            return jsonify({"code": 200, "data": data, "info": "教室信息返回成功!"}), 200
+            app.logger.info("位置推荐返回成功!")
+            return jsonify({"code": 200, "data": data, "info": "位置推荐返回成功!"})
     else:
         error = "特殊位置类型返回为空!"
         app.logger.error(error)
-        return jsonify({"code": 403, "error": error}), 403
+        return jsonify({"code": 403, "error": error})
 
 
 # 座位页面特殊位置搜索

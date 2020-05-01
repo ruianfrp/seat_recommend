@@ -243,27 +243,37 @@ def count_free_seat():
 
 # 特殊座位总数获取
 def count_seat_select():
-    result = None
+    result1 = None
+    result2 = None
+    result3 = None
+    result4 = None
     conn = pymysql.connect(host="localhost", user="root", password="123456", database="seat_recommend",
                            charset="utf8")
     # 得到一个可以执行SQL语句的光标对象
     cursor = conn.cursor()
     # 查询数据的SQL语句
-    sql = "SELECT seat_place,count(1) as counts FROM seat_recommend.seat where seat_state=0 group by seat_place;"
+    sql1 = "SELECT count(id) as counts FROM seat where seat_state=0 and seat_place=0;"
+    sql2 = "SELECT count(id) as counts FROM seat where seat_state=0 and seat_place=1;"
+    sql3 = "SELECT count(id) as counts FROM seat where seat_state=0 and seat_place=2;"
+    sql4 = "SELECT count(id) FROM seat where seat_state=0;"
     try:
-        # 执行SQL语句
-        cursor.execute(sql)
-        # 获取多条查询数据
-        result = cursor.fetchall()
+        cursor.execute(sql1)
+        result1 = cursor.fetchone()
+        cursor.execute(sql2)
+        result2 = cursor.fetchone()
+        cursor.execute(sql3)
+        result3 = cursor.fetchone()
+        cursor.execute(sql4)
+        result4 = cursor.fetchone()
         cursor.close()
         conn.close()
-        return result
+        return result1, result2, result3, result4
     except Exception as e:
         # 有异常，回滚事务
         conn.rollback()
         cursor.close()
         conn.close()
-        return result
+        return result1, result2, result3, result4
 
 
 # 座位信息查询
@@ -292,18 +302,20 @@ def seat_real_select(classroom_id):
 
 
 # 特殊位置空余搜索（教室页面搜索）
-def classroom_special_select(seat_place):
+def classroom_special_select(seatPlace):
     result = None
     conn = pymysql.connect(host="localhost", user="root", password="123456", database="seat_recommend",
                            charset="utf8")
     # 得到一个可以执行SQL语句的光标对象
     cursor = conn.cursor()
     # 查询数据的SQL语句
-    sql = "SELECT s.fk_classroom_id, c.seat_num, count(s.id) as seat_free from seat as s left join classroom as c " \
-          "on c.id=s.fk_classroom_id where s.seat_place=%s and s.seat_state=0 group by s.fk_classroom_id"
+    sql = "SELECT id, classroom_name, seat_num, " \
+          "(select count(s.id) from seat as s where s.fk_classroom_id=c.id and seat_state=0) as free_seat_num, " \
+          "(select count(s.id) from seat as s where c.id=s.fk_classroom_id and s.seat_place=%s and s.seat_state=0) " \
+          "as place_free_seat, classroom_info from classroom as c;"
     try:
         # 执行SQL语句
-        cursor.execute(sql, seat_place)
+        cursor.execute(sql, seatPlace)
         # 获取多条查询数据
         result = cursor.fetchall()
         cursor.close()
