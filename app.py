@@ -234,7 +234,7 @@ def get_real_seat_info():
             image = Image.open("D:/SourceTree/yolov3/img/" + classroom_id + ".jpg")
         except:
             app.logger.error("图片打开失败!")
-            return jsonify({"code": 403, "error": "图片打开失败!"}), 403
+            return jsonify({"code": 403, "error": "图片打开失败!"})
         else:
             yolo.detect_image(image, classroom_id)
         app.logger.info("教室" + classroom_id + "座位实时获取成功!")
@@ -244,10 +244,10 @@ def get_real_seat_info():
         result = mysql.seat_select(classroom_id)
         if result is None:
             app.logger.error("数据库操作异常!")
-            return jsonify({"code": 403, "error": "数据库操作异常!"}), 403
+            return jsonify({"code": 403, "error": "数据库操作异常!"})
         elif result.__len__() == 0:
             app.logger.error("搜索数据为空!")
-            return jsonify({"code": 403, "error": "搜索数据为空!"}), 403
+            return jsonify({"code": 403, "error": "搜索数据为空!"})
         else:
             data = {}
             seats = []
@@ -259,11 +259,11 @@ def get_real_seat_info():
                 seats.append(seat)
             data['seats'] = seats
             app.logger.info("教室信息返回成功!")
-            return jsonify({"code": 200, "data": data, "info": "教室信息返回成功!"}), 200
+            return jsonify({"code": 200, "data": data, "info": "教室信息返回成功!"})
     else:
         error = "返回教室id为空!"
         app.logger.error(error)
-        return jsonify({"code": 403, "error": error}), 403
+        return jsonify({"code": 403, "error": error})
 
 
 # 教室页面特殊位置搜索
@@ -299,36 +299,6 @@ def get_special_classroom_info():
         error = "特殊位置类型返回为空!"
         app.logger.error(error)
         return jsonify({"code": 403, "error": error})
-
-
-# 座位页面特殊位置搜索
-@app.route('/seat_special', methods=['POST'])
-def get_special_seat_info():
-    if request.form['seat_place'] != 'null' and request.form['classroom_id'] != 'null':
-        seat_place = request.form['seat_place']
-        classroom_id = request.form['classroom_id']
-        result = mysql.seat_special_select(seat_place, classroom_id)
-        if result is None:
-            app.logger.error("数据库操作异常!")
-            return jsonify({"code": 403, "error": "数据库操作异常!"}), 403
-        elif result.__len__() == 0:
-            app.logger.info("此类型的位置已全部被占用!")
-            return jsonify({"code": 200, "info": "此类型的位置已全部被占用!"}), 200
-        else:
-            data = {}
-            seats = []
-            for r in result:
-                seat = {
-                    'id': r[0]
-                }
-                seats.append(seat)
-            data['seats'] = seats
-            app.logger.info("座位信息返回成功!")
-            return jsonify({"code": 200, "data": data, "info": "座位信息返回成功!"}), 200
-    else:
-        error = "request返回为空!"
-        app.logger.error(error)
-        return jsonify({"code": 403, "error": error}), 403
 
 
 if __name__ == '__main__':
