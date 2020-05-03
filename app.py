@@ -139,7 +139,7 @@ def delete_classroom():
         app.logger.info(error)
         return jsonify({"code": 403, "error": error})
 
-
+# 修改教室信息
 @app.route('/classroom_update', methods=['POST'])
 def update_classroom():
     if request.get_json().get('seatNums') is not None or request.get_json().get('classroomInfo') is not None:
@@ -220,28 +220,29 @@ def seat_num_get():
         data['allSeatNum'] = result4[0]
         data['seatNums'] = seatNums
         app.logger.info("座位位置及数量返回成功!")
-        return jsonify({"code": 200, "data": data, "info": "座位位置及数量返回成功!"}), 200
+        return jsonify({"code": 200, "data": data, "info": "座位位置及数量返回成功!"})
 
 
 # 获取实时教室座位信息
 @app.route('/seat_real', methods=['POST'])
 def get_real_seat_info():
-    if request.get_json().get('classroom_id') != 'null':
-        classroom_id = request.get_json().get('classroom_id')
+    if request.get_json().get('classroomId') != 'null':
+        classroom_id = request.get_json().get('classroomId')
         # 调用预测模型进行预测
-        yolo = YOLO()
-        try:
-            image = Image.open("D:/SourceTree/yolov3/img/" + classroom_id + ".jpg")
-        except:
-            app.logger.error("图片打开失败!")
-            return jsonify({"code": 403, "error": "图片打开失败!"})
-        else:
-            yolo.detect_image(image, classroom_id)
-        app.logger.info("教室" + classroom_id + "座位实时获取成功!")
-        yolo.close_session()
+        # yolo = YOLO()
+        # try:
+        #     image = Image.open("D:/SourceTree/yolov3/img/" + classroom_id + ".jpg")
+        # except:
+        #     app.logger.error("图片打开失败!")
+        #     return jsonify({"code": 403, "error": "图片打开失败!"})
+        # else:
+        #     yolo.detect_image(image, classroom_id)
+        # app.logger.info("教室" + classroom_id + "座位实时获取成功!")
+        # yolo.close_session()
 
         # 返回座位信息
-        result = mysql.seat_select(classroom_id)
+        result_max = mysql.seat_max_select(classroom_id)
+        result = mysql.seat_real_select(classroom_id)
         if result is None:
             app.logger.error("数据库操作异常!")
             return jsonify({"code": 403, "error": "数据库操作异常!"})
@@ -250,16 +251,12 @@ def get_real_seat_info():
             return jsonify({"code": 403, "error": "搜索数据为空!"})
         else:
             data = {}
-            seats = []
+            seats = [[2 for i in range(result_max[1])] for j in range(result_max[0])]
             for r in result:
-                seat = {
-                    'id': r[0],
-                    'seatState': r[1]
-                }
-                seats.append(seat)
+                seats[r[1]-1][r[2]-1] = r[3]
             data['seats'] = seats
-            app.logger.info("教室信息返回成功!")
-            return jsonify({"code": 200, "data": data, "info": "教室信息返回成功!"})
+            app.logger.info("座位信息返回成功!")
+            return jsonify({"code": 200, "data": data, "info": "座位信息返回成功!"})
     else:
         error = "返回教室id为空!"
         app.logger.error(error)
@@ -297,6 +294,34 @@ def get_special_classroom_info():
             return jsonify({"code": 200, "data": data, "info": "位置推荐返回成功!"})
     else:
         error = "特殊位置类型返回为空!"
+        app.logger.error(error)
+        return jsonify({"code": 403, "error": error})
+
+
+# 获取教室信息
+@app.route('/get_classInfo_by_id', methods=['POST'])
+def get_classInfo_by_id():
+    if request.get_json().get('classroomId') != 'null':
+        classroomId = request.get_json().get('classroomId')
+        result = mysql.get_classInfo_by_id(classroomId)
+        print(result)
+        if result is None:
+            app.logger.error("数据库操作异常!")
+            return jsonify({"code": 403, "error": "数据库操作异常!"})
+        else:
+            data = {}
+            classroom = {
+                'id': result[0],
+                'classroomName': result[1],
+                'seatNum': result[2],
+                'freeSeatNum': result[3],
+                'classroomInfo': result[4]
+            }
+            data['classroom'] = classroom
+            app.logger.info("位置推荐返回成功!")
+            return jsonify({"code": 200, "data": data, "info": "位置推荐返回成功!"})
+    else:
+        error = "返回教室id为空!"
         app.logger.error(error)
         return jsonify({"code": 403, "error": error})
 

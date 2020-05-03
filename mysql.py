@@ -284,12 +284,37 @@ def seat_real_select(classroom_id):
     # 得到一个可以执行SQL语句的光标对象
     cursor = conn.cursor()
     # 查询数据的SQL语句
-    sql = "SELECT id, seat_state from seat where fk_classroom_id=%s;"
+    sql = "SELECT id,seat_real_y,seat_real_x,seat_state FROM seat_recommend.seat where fk_classroom_id=%s;"
     try:
         # 执行SQL语句
         cursor.execute(sql, classroom_id)
         # 获取多条查询数据
         result = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return result
+    except Exception as e:
+        # 有异常，回滚事务
+        conn.rollback()
+        cursor.close()
+        conn.close()
+        return result
+
+
+# 座位信息查询
+def seat_max_select(classroom_id):
+    result = None
+    conn = pymysql.connect(host="localhost", user="root", password="123456", database="seat_recommend",
+                           charset="utf8")
+    # 得到一个可以执行SQL语句的光标对象
+    cursor = conn.cursor()
+    # 查询数据的SQL语句
+    sql = "SELECT max(seat_real_y), max(seat_real_x) from seat where fk_classroom_id=%s;"
+    try:
+        # 执行SQL语句
+        cursor.execute(sql, classroom_id)
+        # 获取多条查询数据
+        result = cursor.fetchone()
         cursor.close()
         conn.close()
         return result
@@ -390,6 +415,34 @@ def seat_select(pic_x, pic_y, classroom_id):
         conn.rollback()
         cursor.close()
         conn.close()
+        return result
+
+
+# 教室信息查询
+def get_classInfo_by_id(classroomId):
+    result = None
+    conn = pymysql.connect(host="localhost", user="root", password="123456", database="seat_recommend",
+                           charset="utf8")
+    # 得到一个可以执行SQL语句的光标对象
+    cursor = conn.cursor()
+    # 查询数据的SQL语句
+    sql = "SELECT c.id,c.classroom_name,c.seat_num,(select count(s.id) from seat as s where s.fk_classroom_id=c.id " \
+          "and seat_state=0) as free_seat_num,classroom_info FROM classroom as c where c.id=%s;"
+    try:
+        # 执行SQL语句
+        cursor.execute(sql, classroomId)
+        # 获取多条查询数据
+        result = cursor.fetchone()
+        print(result)
+        cursor.close()
+        conn.close()
+        return result
+    except Exception as e:
+        # 有异常，回滚事务
+        conn.rollback()
+        cursor.close()
+        conn.close()
+        print(e)
         return result
 
 
