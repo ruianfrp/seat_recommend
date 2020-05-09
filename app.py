@@ -1,6 +1,11 @@
+import os
+
+import keras
+from PIL import Image
 from flask import Flask, request, jsonify, abort, current_app
 from flask_cors import CORS
 from itsdangerous import Serializer
+from concurrent.futures import ThreadPoolExecutor
 
 import token_authorization
 import json
@@ -8,11 +13,25 @@ import json
 import AesCipher
 import mysql
 import functools
-from yolo import YOLO
-from PIL import Image
 
+from yolo import YOLO
+
+executor = ThreadPoolExecutor(10)
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
+
+
+# 每隔两秒执行一次任务
+def real_seat(classroom_id):
+    keras.backend.clear_session()
+    yolo = YOLO()
+    try:
+        image = Image.open("D:/SourceTree/yolov3/img/" + str(classroom_id) + ".jpg")
+    except:
+        return app.logger.error("图片打开失败!")
+    else:
+        yolo.detect_image(image, classroom_id)
+        return app.logger.info("座位实时获取成功!")
 
 
 # 在上面的基础上导入
@@ -45,7 +64,6 @@ def login():
         username = request.get_json().get('username')
         pwd = request.get_json().get('password')
         result = mysql.user_select(username)
-        print(result[2])
         password = str(AesCipher.encryption(pwd), 'utf-8')
         if password != result[2]:
             error = '密码错误!'
@@ -97,7 +115,6 @@ def insert_classroom():
     if request.get_json().get('classroomName') is not None and \
             request.get_json().get('seatNums') is not None and \
             request.get_json().get('classroomInfo') is not None:
-        print(request.get_json().get('classroomName'))
         classroom_name = request.get_json().get('classroomName')
         seat_nums = request.get_json().get('seatNums')
         classroom_info = request.get_json().get('classroomInfo')
@@ -228,19 +245,19 @@ def seat_num_get():
 def get_real_seat_info():
     if request.get_json().get('classroomId') != 'null':
         classroom_id = request.get_json().get('classroomId')
-        # 调用预测模型进行预测
+
+        # keras.backend.clear_session()
         # yolo = YOLO()
         # try:
-        #     image = Image.open("D:/SourceTree/yolov3/img/" + classroom_id + ".jpg")
+        #     image = Image.open("D:/SourceTree/yolov3/img/" + str(classroom_id) + ".jpg")
         # except:
         #     app.logger.error("图片打开失败!")
-        #     return jsonify({"code": 403, "error": "图片打开失败!"})
         # else:
         #     yolo.detect_image(image, classroom_id)
-        # app.logger.info("教室" + classroom_id + "座位实时获取成功!")
-        # yolo.close_session()
+        # app.logger.info("座位实时获取成功!")
 
-        # 返回座位信息
+        executor.submit(real_seat, classroom_id)
+
         result_max = mysql.seat_max_select(classroom_id)
         result = mysql.seat_real_select(classroom_id)
         if result is None:
@@ -304,7 +321,6 @@ def get_classInfo_by_id():
     if request.get_json().get('classroomId') != 'null':
         classroomId = request.get_json().get('classroomId')
         result = mysql.get_classInfo_by_id(classroomId)
-        print(result)
         if result is None:
             app.logger.error("数据库操作异常!")
             return jsonify({"code": 403, "error": "数据库操作异常!"})
@@ -318,8 +334,8 @@ def get_classInfo_by_id():
                 'classroomInfo': result[4]
             }
             data['classroom'] = classroom
-            app.logger.info("位置推荐返回成功!")
-            return jsonify({"code": 200, "data": data, "info": "位置推荐返回成功!"})
+            app.logger.info("教室信息返回成功!")
+            return jsonify({"code": 200, "data": data, "info": "教室信息返回成功!"})
     else:
         error = "返回教室id为空!"
         app.logger.error(error)

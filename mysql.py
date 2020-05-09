@@ -380,8 +380,10 @@ def seat_special_select(seat_place, classroom_id):
 
 
 # 搜索人物是否在某个位置上(包含初始化座位信息)
-def seat_select(pic_x, pic_y, classroom_id):
+def seat_select(x, y, classroom_id):
     result = None
+    pic_x = float(x)
+    pic_y = float(y)
     conn = pymysql.connect(host="localhost", user="root", password="123456", database="seat_recommend",
                            charset="utf8")
     # 得到一个可以执行SQL语句的光标对象
@@ -415,6 +417,7 @@ def seat_select(pic_x, pic_y, classroom_id):
         conn.rollback()
         cursor.close()
         conn.close()
+        print(e)
         return result
 
 

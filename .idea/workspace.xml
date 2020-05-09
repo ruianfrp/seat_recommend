@@ -2,9 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="883beecd-ece1-4f72-a1db-aa4b881616ff" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/img/1.jpg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mysql.py" beforeDir="false" afterPath="$PROJECT_DIR$/mysql.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolo.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -68,7 +71,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.token_authorization">
+  <component name="RunManager" selected="Python.app">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="Yolov3" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -157,6 +160,28 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="utils" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="Yolov3" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/utils" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/utils/utils.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="voc2yolo3" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Yolov3" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -179,35 +204,13 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="voc_annotation" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="Yolov3" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/voc_annotation.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.app" />
+        <item itemvalue="Python.utils" />
         <item itemvalue="Python.token_authorization" />
         <item itemvalue="Python.get_token" />
-        <item itemvalue="Python.app" />
         <item itemvalue="Python.voc2yolo3" />
-        <item itemvalue="Python.voc_annotation" />
       </list>
     </recent_temporary>
   </component>
@@ -293,6 +296,10 @@
       <workItem from="1588308340645" duration="9179000" />
       <workItem from="1588395058659" duration="2837000" />
       <workItem from="1588485809002" duration="12161000" />
+      <workItem from="1588656337223" duration="1855000" />
+      <workItem from="1588825518067" duration="1171000" />
+      <workItem from="1588917939672" duration="17084000" />
+      <workItem from="1588947229774" duration="1687000" />
     </task>
     <servers />
   </component>
