@@ -98,5 +98,4 @@ def get_random_data(annotation_line, input_shape, random=True, max_boxes=20, jit
 def print_answer(argmax):
     with open("./model_data/index_word.txt", "r", encoding='utf-8') as f:
         synset = [l.split(";")[1][:-1] for l in f.readlines()]
-
     return synset[argmax]
