@@ -21,3 +21,5 @@ classes = ["aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat"
     - cudnn 7.0.5
     - pymysql 8.0.18
     - flask 0.11.1
+    - celery 3.1.25
+    - redis 3.5.0

@@ -2,13 +2,12 @@ import os
 
 import keras
 from PIL import Image
-from flask import Flask, request, jsonify, abort, current_app
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from itsdangerous import Serializer
 from concurrent.futures import ThreadPoolExecutor
 
 import token_authorization
-import json
 
 import AesCipher
 import mysql
@@ -21,17 +20,17 @@ app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
 
-# 每隔两秒执行一次任务
+# 座位获取（耗时任务）
 def real_seat(classroom_id):
     keras.backend.clear_session()
     yolo = YOLO()
     try:
         image = Image.open("D:/SourceTree/yolov3/img/" + str(classroom_id) + ".jpg")
     except:
-        return app.logger.error("图片打开失败!")
+        app.logger.error("图片打开失败!")
     else:
         yolo.detect_image(image, classroom_id)
-        return app.logger.info("座位实时获取成功!")
+        app.logger.info("座位实时获取成功!")
 
 
 # 在上面的基础上导入
@@ -245,18 +244,8 @@ def seat_num_get():
 def get_real_seat_info():
     if request.get_json().get('classroomId') != 'null':
         classroom_id = request.get_json().get('classroomId')
-
-        # keras.backend.clear_session()
-        # yolo = YOLO()
-        # try:
-        #     image = Image.open("D:/SourceTree/yolov3/img/" + str(classroom_id) + ".jpg")
-        # except:
-        #     app.logger.error("图片打开失败!")
-        # else:
-        #     yolo.detect_image(image, classroom_id)
-        # app.logger.info("座位实时获取成功!")
-
-        executor.submit(real_seat, classroom_id)
+        # 异步
+        executor.submit(real_seat(classroom_id))
 
         result_max = mysql.seat_max_select(classroom_id)
         result = mysql.seat_real_select(classroom_id)
