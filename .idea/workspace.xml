@@ -5,6 +5,8 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mysql.py" beforeDir="false" afterPath="$PROJECT_DIR$/mysql.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nets/loss.py" beforeDir="false" afterPath="$PROJECT_DIR$/nets/loss.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -68,7 +70,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.app">
+  <component name="RunManager" selected="Python.mysql">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="Yolov3" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -135,6 +137,25 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="mysql" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="Yolov3" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/mysql.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="token_authorization" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Yolov3" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -179,35 +200,13 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="voc2yolo3" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="Yolov3" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/VOCdevkit/VOC2007" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/VOCdevkit/VOC2007/voc2yolo3.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.mysql" />
         <item itemvalue="Python.app" />
         <item itemvalue="Python.utils" />
         <item itemvalue="Python.token_authorization" />
         <item itemvalue="Python.get_token" />
-        <item itemvalue="Python.voc2yolo3" />
       </list>
     </recent_temporary>
   </component>
@@ -297,7 +296,12 @@
       <workItem from="1588825518067" duration="1171000" />
       <workItem from="1588917939672" duration="17084000" />
       <workItem from="1588947229774" duration="1687000" />
-      <workItem from="1588997352591" duration="7405000" />
+      <workItem from="1588997352591" duration="8471000" />
+      <workItem from="1589010134777" duration="3144000" />
+      <workItem from="1589084681415" duration="5863000" />
+      <workItem from="1589172126281" duration="1568000" />
+      <workItem from="1589192771988" duration="2008000" />
+      <workItem from="1589209449490" duration="4422000" />
     </task>
     <servers />
   </component>

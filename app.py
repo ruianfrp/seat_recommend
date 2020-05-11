@@ -245,7 +245,7 @@ def get_real_seat_info():
     if request.get_json().get('classroomId') != 'null':
         classroom_id = request.get_json().get('classroomId')
         # 异步
-        executor.submit(real_seat(classroom_id))
+        # executor.submit(real_seat(classroom_id))
 
         result_max = mysql.seat_max_select(classroom_id)
         result = mysql.seat_real_select(classroom_id)
