@@ -436,7 +436,6 @@ def get_classInfo_by_id(classroomId):
         cursor.execute(sql, classroomId)
         # 获取多条查询数据
         result = cursor.fetchone()
-        print(result)
         cursor.close()
         conn.close()
         return result
@@ -445,11 +444,125 @@ def get_classInfo_by_id(classroomId):
         conn.rollback()
         cursor.close()
         conn.close()
-        print(e)
+        return result
+
+
+# 预约座位
+def appointment(start_time, classroom_id, seat_x, seat_y, user_no):
+    result = None
+    conn = pymysql.connect(host="localhost", user="root", password="123456", database="seat_recommend", charset="utf8")
+    # 得到一个可以执行SQL语句的光标对象
+    cursor = conn.cursor()
+    # 查询数据的SQL语句
+    sql = "SELECT count(id) FROM appointment where fk_user_no=%s and if_done=0;"
+    try:
+        # 执行SQL语句
+        cursor.execute(sql, user_no)
+        # 获取多条查询数据
+        result = cursor.fetchone()
+        if result[0] == 5:
+            result = "OUT"
+            return result
+        else:
+            sql = "SELECT id FROM seat where fk_classroom_id=%s and seat_real_x=%s and seat_real_y=%s;"
+            try:
+                # 执行SQL语句
+                cursor.execute(sql, [classroom_id, seat_x, seat_y])
+                result = cursor.fetchone()
+                sql = "SELECT id FROM appointment where fk_seat_id=%s and fk_classroom_id=%s " \
+                      "and start_time=%s and if_done=0"
+                try:
+                    cursor.execute(sql, [result[0], classroom_id, start_time])
+                    result1 = cursor.fetchone()
+                    if result1[0] is not None:
+                        conn.rollback()
+                        cursor.close()
+                        conn.close()
+                        result = 'False'
+                        return result
+                    else:
+                        sql = "insert into appointment(fk_seat_id, fk_classroom_id, fk_user_no, start_time, if_done) " \
+                              "value(%s,%s,%s,%s,0);"
+                        try:
+                            cursor.execute(sql, [result[0], classroom_id, user_no, start_time])
+                            conn.commit()
+                            cursor.close()
+                            conn.close()
+                            result = 'True'
+                            return result
+                        except Exception as e:
+                            conn.rollback()
+                            cursor.close()
+                            conn.close()
+                            result = None
+                            return result
+                except Exception as e:
+                    conn.rollback()
+                    cursor.close()
+                    conn.close()
+                    result = None
+                    return result
+            except Exception as e:
+                conn.rollback()
+                cursor.close()
+                conn.close()
+                result = None
+                return result
+    except Exception as e:
+        # 有异常，回滚事务
+        conn.rollback()
+        cursor.close()
+        conn.close()
+        return result
+
+
+# 定时修改预约状态以及座位状态
+def appointment_automatic():
+    result = None
+    conn = pymysql.connect(host="localhost", user="root", password="123456", database="seat_recommend", charset="utf8")
+    cursor = conn.cursor()
+    sql = "SELECT fk_seat_id FROM appointment where if_done=0 and start_time<now();"
+    try:
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        if result.__len__() != 0:
+            sql = "update appointment set if_done=1 where if_done=0 and start_time<now();"
+            try:
+                cursor.execute(sql)
+                conn.commit()
+                sql = "update seat set seat_state=3 where id=%s;"
+                for r in result:
+                    try:
+                        cursor.execute(sql, r[0])
+                        conn.commit()
+                    except Exception as e:
+                        # 有异常，回滚事务
+                        conn.rollback()
+                        cursor.close()
+                        conn.close()
+                        result = None
+                        return result
+                cursor.close()
+                conn.close()
+                result = 'True'
+                return result
+            except Exception as e:
+                # 有异常，回滚事务
+                conn.rollback()
+                cursor.close()
+                conn.close()
+                result = None
+                return result
+    except Exception as e:
+        # 有异常，回滚事务
+        conn.rollback()
+        cursor.close()
+        conn.close()
         return result
 
 
 if __name__ == "__main__":
     # user_insert("ccc", "Ab123456")
     # print(user_select("aaa") == str(AesCipher.encryption("Ab123456"), 'utf-8'))
-    mysql_login()
+    # mysql_login()
+    appointment('2020-5-5 11:11:11', 1, 1, 1, 1111)
