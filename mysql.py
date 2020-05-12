@@ -2,6 +2,7 @@ import pymysql
 from flask import json
 
 import AesCipher
+import time
 import pandas as pd
 
 
@@ -447,18 +448,22 @@ def get_classInfo_by_id(classroomId):
         return result
 
 
-# 预约座位
+# 预约座位(延迟)
 def appointment(start_time, classroom_id, seat_x, seat_y, user_no):
     result = None
+    if start_time == time.strftime('%Y-%m-%d', time.localtime(time.time())):
+        if_done = 1
+    elif start_time < time.strftime('%Y-%m-%d', time.localtime(time.time())):
+        result = "Obsolete"
+        return result
+    else:
+        if_done = 0
     conn = pymysql.connect(host="localhost", user="root", password="123456", database="seat_recommend", charset="utf8")
     # 得到一个可以执行SQL语句的光标对象
     cursor = conn.cursor()
-    # 查询数据的SQL语句
-    sql = "SELECT count(id) FROM appointment where fk_user_no=%s and if_done=0;"
+    sql = "SELECT count(id) FROM appointment where fk_user_no=%s and (if_done=1 or if_done=0);"
     try:
-        # 执行SQL语句
         cursor.execute(sql, user_no)
-        # 获取多条查询数据
         result = cursor.fetchone()
         if result[0] == 5:
             result = "OUT"
@@ -466,26 +471,35 @@ def appointment(start_time, classroom_id, seat_x, seat_y, user_no):
         else:
             sql = "SELECT id FROM seat where fk_classroom_id=%s and seat_real_x=%s and seat_real_y=%s;"
             try:
-                # 执行SQL语句
                 cursor.execute(sql, [classroom_id, seat_x, seat_y])
                 result = cursor.fetchone()
                 sql = "SELECT id FROM appointment where fk_seat_id=%s and fk_classroom_id=%s " \
-                      "and start_time=%s and if_done=0"
+                      "and start_time=%s and if_done!=3;"
                 try:
                     cursor.execute(sql, [result[0], classroom_id, start_time])
                     result1 = cursor.fetchone()
-                    if result1[0] is not None:
-                        conn.rollback()
+                    if result1 is not None:
                         cursor.close()
                         conn.close()
                         result = 'False'
                         return result
                     else:
                         sql = "insert into appointment(fk_seat_id, fk_classroom_id, fk_user_no, start_time, if_done) " \
-                              "value(%s,%s,%s,%s,0);"
+                              "value(%s,%s,%s,%s,%s);"
                         try:
-                            cursor.execute(sql, [result[0], classroom_id, user_no, start_time])
+                            cursor.execute(sql, [result[0], classroom_id, user_no, start_time, if_done])
                             conn.commit()
+                            if if_done == 1:
+                                sql = "update seat set seat_state=3 where id=%s;"
+                                try:
+                                    cursor.execute(sql, result[0])
+                                    conn.commit()
+                                except Exception as e:
+                                    conn.rollback()
+                                    cursor.close()
+                                    conn.close()
+                                    result = None
+                                    return result
                             cursor.close()
                             conn.close()
                             result = 'True'
@@ -503,14 +517,11 @@ def appointment(start_time, classroom_id, seat_x, seat_y, user_no):
                     result = None
                     return result
             except Exception as e:
-                conn.rollback()
                 cursor.close()
                 conn.close()
                 result = None
                 return result
     except Exception as e:
-        # 有异常，回滚事务
-        conn.rollback()
         cursor.close()
         conn.close()
         return result
@@ -521,6 +532,12 @@ def appointment_automatic():
     result = None
     conn = pymysql.connect(host="localhost", user="root", password="123456", database="seat_recommend", charset="utf8")
     cursor = conn.cursor()
+    sql = "update seat set seat_state=0 where seat_state=3;"
+    cursor.execute(sql)
+    conn.commit()
+    sql = "update appointment set if_done=2 where if_done=1;"
+    cursor.execute(sql)
+    conn.commit()
     sql = "SELECT fk_seat_id FROM appointment where if_done=0 and start_time<now();"
     try:
         cursor.execute(sql)
@@ -553,11 +570,41 @@ def appointment_automatic():
                 conn.close()
                 result = None
                 return result
+        else:
+            cursor.close()
+            conn.close()
+            result = 'False'
+            return result
     except Exception as e:
-        # 有异常，回滚事务
-        conn.rollback()
         cursor.close()
         conn.close()
+        return result
+
+
+# 获取当前预约的座位
+def currently_appointment(userNo):
+    result = None
+    conn = pymysql.connect(host="localhost", user="root", password="123456", database="seat_recommend", charset="utf8")
+    cursor = conn.cursor()
+    sql = "SELECT s.seat_real_x, s.seat_real_y, c.id, c.classroom_name, date_format(a.start_time,'%%Y-%%m-%%d') FROM " \
+          "appointment as a left join seat as s on a.fk_seat_id=s.id left join classroom as c on " \
+          "c.id=a.fk_classroom_id where a.fk_user_no=%s and (a.if_done=0 or a.if_done=1);"
+    try:
+        cursor.execute(sql, userNo)
+        result = cursor.fetchall()
+        if result.__len__() != 0:
+            cursor.close()
+            conn.close()
+            return result
+        else:
+            cursor.close()
+            conn.close()
+            result = 'False'
+            return result
+    except Exception as e:
+        cursor.close()
+        conn.close()
+        print(e)
         return result
 
 
@@ -565,4 +612,5 @@ if __name__ == "__main__":
     # user_insert("ccc", "Ab123456")
     # print(user_select("aaa") == str(AesCipher.encryption("Ab123456"), 'utf-8'))
     # mysql_login()
-    appointment('2020-5-5 11:11:11', 1, 1, 1, 1111)
+    # appointment('2020-5-5 11:11:11', 1, 1, 1, 1111)
+    print(appointment_automatic())

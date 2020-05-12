@@ -6,17 +6,52 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from itsdangerous import Serializer
 from concurrent.futures import ThreadPoolExecutor
+from flask_apscheduler import APScheduler
 
 import token_authorization
 
 import AesCipher
 import mysql
 import functools
+import time
 
 from yolo import YOLO
 
-executor = ThreadPoolExecutor(10)
+
+# 定时任务配置类
+class SchedulerConfig(object):
+    JOBS = [
+        {
+            'id': 'automatic_seat',
+            # 任务执行程序
+            'func': '__main__:automatic_seat',
+            # 执行程序参数
+            'args': None,
+            # 任务执行类型
+            'trigger': 'cron',
+            'hour': 1,
+            'minute': 0
+        }
+    ]
+
+
+# 定义任务执行程序
+def automatic_seat():
+    print("座位预约自动实现!")
+    result = mysql.appointment_automatic()
+    if result == 'True':
+        app.logger.info(str(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))) + " 座位预约自动实现成功!")
+    elif result == 'False':
+        app.logger.error(str(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))) + " 数据库操作错误!")
+    else:
+        app.logger.warn(str(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))) + " 无需操作的数据!")
+
+
 app = Flask(__name__)
+app.config.from_object(SchedulerConfig())
+scheduler = APScheduler()  # 实例化APScheduler
+scheduler.init_app(app)  # 把任务列表载入实例flask
+scheduler.start()  # 启动任务计划
 CORS(app, supports_credentials=True)
 
 
@@ -327,6 +362,72 @@ def get_classInfo_by_id():
             return jsonify({"code": 200, "data": data, "info": "教室信息返回成功!"})
     else:
         error = "返回教室id为空!"
+        app.logger.error(error)
+        return jsonify({"code": 403, "error": error})
+
+
+# 预约座位
+@app.route('/seat_appointment', methods=['POST'])
+def appointment_seat():
+    if request.get_json().get('classroomId') != 'null' and request.get_json().get('seatX') != 'null' and \
+            request.get_json().get('seatY') != 'null' and request.get_json().get('startTime') != 'null' and \
+            request.get_json().get('userNo') != 'null':
+        classroomId = request.get_json().get('classroomId')
+        seatX = request.get_json().get('seatX')
+        seatY = request.get_json().get('seatY')
+        startTime = request.get_json().get('startTime')
+        userNo = request.get_json().get('userNo')
+        result = mysql.appointment(startTime, classroomId, seatX, seatY, userNo)
+        if result is None:
+            app.logger.error("数据库操作异常!")
+            return jsonify({"code": 403, "error": "数据库操作异常!"})
+        elif result == "OUT":
+            app.logger.error("预约已满5次!")
+            return jsonify({"code": 403, "error": "预约已满5次!"})
+        elif result == 'False':
+            app.logger.error("该座位该日期已被预约，请更换日期!")
+            return jsonify({"code": 403, "error": "该座位该日期已被预约，请更换日期!"})
+        elif result == 'Obsolete':
+            app.logger.error("预约日期不得小于当前日期!")
+            return jsonify({"code": 403, "error": "预约日期不得小于当前日期!"})
+        else:
+            app.logger.info("预约成功!")
+            return jsonify({"code": 200, "info": "预约成功!"})
+    else:
+        error = "返回数据为空!"
+        app.logger.error(error)
+        return jsonify({"code": 403, "error": error})
+
+
+# 获取当前预约的座位
+@app.route('/currently_appointment', methods=['POST'])
+def get_currently_appointment():
+    if request.get_json().get('userNo') != 'null':
+        userNo = request.get_json().get('userNo')
+        result = mysql.currently_appointment(userNo)
+        if result is None:
+            app.logger.error("数据库操作异常!")
+            return jsonify({"code": 403, "error": "数据库操作异常!"})
+        elif result == 'False':
+            app.logger.warn("当前无预约记录!")
+            return jsonify({"code": 300, "warn": "当前无预约记录!"})
+        else:
+            data = {}
+            appointments = []
+            for r in result:
+                seat = "第 " + str(r[1]) + " 排 第 " + str(r[0]) + " 座"
+                appointment = {
+                    'seat': seat,
+                    'classroomId': r[2],
+                    'classroomName': r[3],
+                    'startTime': r[4]
+                }
+                appointments.append(appointment)
+            data['appointments'] = appointments
+            app.logger.info("当前预约记录返回成功!")
+            return jsonify({"code": 200, "data": data, "info": "当前预约记录返回成功!"})
+    else:
+        error = "返回数据为空!"
         app.logger.error(error)
         return jsonify({"code": 403, "error": error})
 

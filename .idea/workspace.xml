@@ -141,6 +141,9 @@
       <module name="Yolov3" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -302,6 +305,8 @@
       <workItem from="1589172126281" duration="1568000" />
       <workItem from="1589192771988" duration="2008000" />
       <workItem from="1589209449490" duration="4422000" />
+      <workItem from="1589255600841" duration="13980000" />
+      <workItem from="1589274326930" duration="1813000" />
     </task>
     <servers />
   </component>
