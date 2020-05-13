@@ -174,7 +174,7 @@ class YOLO(object):
 
         print('6' * 60)
 
-        #     # 画框框
+        #     # 画框
         #     label = '{} {:.2f}'.format(predicted_class, score)
         #     draw = ImageDraw.Draw(image)
         #     label_size = draw.textsize(label, font)

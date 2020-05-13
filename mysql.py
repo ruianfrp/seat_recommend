@@ -391,7 +391,7 @@ def seat_select(x, y, classroom_id):
     cursor = conn.cursor()
     # 座位初始化
     # 初始化座位信息SQL语句
-    sql1 = "UPDATE seat SET seat_state=0 WHERE fk_classroom_id=%s;"
+    sql1 = "UPDATE seat SET seat_state=0 WHERE fk_classroom_id=%s and seat_state!=3 and seat_state!=4;"
     try:
         # 执行SQL语句
         cursor.execute(sql1, classroom_id)

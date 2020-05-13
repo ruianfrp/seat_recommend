@@ -77,7 +77,7 @@ def box_iou(b1, b2):
 # --------------------------------------------------- #
 def yolo_loss(args, anchors, num_classes, ignore_thresh=.5, print_loss=False):
 
-    # 一共有三层
+    # 三层
     num_layers = len(anchors)//3
 
     # 将预测结果和实际ground truth分开，args是[*model_body.output, *y_true]

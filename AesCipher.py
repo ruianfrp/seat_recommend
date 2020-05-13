@@ -18,7 +18,7 @@ def pad_key(key):
     return key
 
 
-# des加密
+# aes加密
 def encryption(text):
     # 进行加密算法，模式ECB模式，把叠加完16位的秘钥传进来
     aes = AES.new(pad_key(key).encode(), AES.MODE_ECB)
@@ -28,7 +28,7 @@ def encryption(text):
     return encrypted_text_hex
 
 
-# des解密
+# aes解密
 def decrypt(encrypted_text):
     aes = AES.new(pad_key(key).encode(), AES.MODE_ECB)
     de = str(aes.decrypt(a2b_hex(encrypted_text)), encoding='utf-8', errors="ignore")

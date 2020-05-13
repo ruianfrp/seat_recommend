@@ -47,6 +47,7 @@ def automatic_seat():
         app.logger.warn(str(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))) + " 无需操作的数据!")
 
 
+executor = ThreadPoolExecutor(10)
 app = Flask(__name__)
 app.config.from_object(SchedulerConfig())
 scheduler = APScheduler()  # 实例化APScheduler
