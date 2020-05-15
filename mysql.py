@@ -151,24 +151,38 @@ def classroom_update(seat_num, classroom_info, classroom_id):
 
 
 # 添加座位信息（批量）
-def seat_insert_many(data):
+def seat_insert_many(classroomId, data):
+    result = None
     conn = pymysql.connect(host="localhost", user="root", password="123456", database="seat_recommend",
                            charset="utf8")
     # 得到一个可以执行SQL语句的光标对象
     cursor = conn.cursor()
-    sql = "INSERT INTO seat(fk_classroom_id, seat_real_x, seat_real_y, seat_pic_x, seat_pic_y, seat_state, " \
-          "seat_place) VALUES (%s, %s, %s, %s, %s, %s, %s);"
-    # data = [("Alex", 18), ("Egon", 20), ("Yuan", 21)]
+    sql = "delete from seat where fk_classroom_id=%s;"
     try:
-        # 批量执行多条插入SQL语句
-        cursor.executemany(sql, data)
-        # 提交事务
+        cursor.execute(sql, classroomId)
         conn.commit()
+        sql = "INSERT INTO seat(fk_classroom_id, seat_real_x, seat_real_y, seat_pic_top, seat_pic_bottom, " \
+              "seat_pic_left, seat_pic_right, seat_state, seat_place) VALUES (%s, %s, %s, 0, 0, 0, 0, %s, %s);"
+        try:
+            # 批量执行多条插入SQL语句
+            cursor.executemany(sql, data)
+            conn.commit()
+            cursor.close()
+            conn.close()
+            result = 'True'
+            return result
+        except Exception as e:
+            # 有异常，回滚事务
+            conn.rollback()
+            cursor.close()
+            conn.close()
+            return result
     except Exception as e:
         # 有异常，回滚事务
         conn.rollback()
-    cursor.close()
-    conn.close()
+        cursor.close()
+        conn.close()
+        return result
 
 
 # 修改座位信息
