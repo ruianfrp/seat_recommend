@@ -12,9 +12,7 @@ from nets.darknet53 import darknet_body
 from utils.utils import compose
 
 
-# --------------------------------------------------#
-#   单次卷积
-# --------------------------------------------------#
+# 单次卷积
 @wraps(Conv2D)
 def DarknetConv2D(*args, **kwargs):
     darknet_conv_kwargs = {'kernel_regularizer': l2(5e-4)}
@@ -23,10 +21,8 @@ def DarknetConv2D(*args, **kwargs):
     return Conv2D(*args, **darknet_conv_kwargs)
 
 
-# ---------------------------------------------------#
-#   卷积块
-#   DarknetConv2D + BatchNormalization + LeakyReLU
-# ---------------------------------------------------#
+# 卷积块
+# DarknetConv2D + BatchNormalization + LeakyReLU
 def DarknetConv2D_BN_Leaky(*args, **kwargs):
     no_bias_kwargs = {'use_bias': False}
     no_bias_kwargs.update(kwargs)
@@ -36,9 +32,7 @@ def DarknetConv2D_BN_Leaky(*args, **kwargs):
         LeakyReLU(alpha=0.1))
 
 
-# ---------------------------------------------------#
-#   特征层->最后的输出
-# ---------------------------------------------------#
+# 特征层->最后的输出
 def make_last_layers(x, num_filters, out_filters):
     # 五次卷积
     x = DarknetConv2D_BN_Leaky(num_filters, (1, 1))(x)
@@ -54,9 +48,7 @@ def make_last_layers(x, num_filters, out_filters):
     return x, y
 
 
-# ---------------------------------------------------#
-#   特征层->最后的输出
-# ---------------------------------------------------#
+# 特征层->最后的输出
 def yolo_body(inputs, num_anchors, num_classes):
     # 生成darknet53的主干模型
     feat1, feat2, feat3 = darknet_body(inputs)
@@ -85,9 +77,7 @@ def yolo_body(inputs, num_anchors, num_classes):
     return Model(inputs, [y1, y2, y3])
 
 
-# ---------------------------------------------------#
-#   将预测值的每个特征层调成真实值
-# ---------------------------------------------------#
+# 将预测值的每个特征层调成真实值
 def yolo_head(feats, anchors, num_classes, input_shape, calc_loss=False):
     num_anchors = len(anchors)
     # [1, 1, 1, num_anchors, 2]
@@ -120,9 +110,7 @@ def yolo_head(feats, anchors, num_classes, input_shape, calc_loss=False):
     return box_xy, box_wh, box_confidence, box_class_probs
 
 
-# ---------------------------------------------------#
-#   对box进行调整，使其符合真实图片的样子
-# ---------------------------------------------------#
+# 对box进行调整，使其符合真实图片的样子
 def yolo_correct_boxes(box_xy, box_wh, input_shape, image_shape):
     box_yx = box_xy[..., ::-1]
     box_hw = box_wh[..., ::-1]
@@ -149,9 +137,7 @@ def yolo_correct_boxes(box_xy, box_wh, input_shape, image_shape):
     return boxes
 
 
-# ---------------------------------------------------#
-#   获取每个box和它的得分
-# ---------------------------------------------------#
+# 获取每个box和它的得分
 def yolo_boxes_and_scores(feats, anchors, num_classes, input_shape, image_shape):
     # 将预测值调成真实值
     # box_xy对应框的中心点
@@ -167,9 +153,7 @@ def yolo_boxes_and_scores(feats, anchors, num_classes, input_shape, image_shape)
     return boxes, box_scores
 
 
-# ---------------------------------------------------#
-#   图片预测
-# ---------------------------------------------------#
+# 图片预测
 def yolo_eval(yolo_outputs,
               anchors,
               num_classes,

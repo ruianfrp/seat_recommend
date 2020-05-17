@@ -40,11 +40,11 @@ def automatic_seat():
     print("座位预约自动实现！")
     result = mysql.appointment_automatic()
     if result == 'True':
-        app.logger.info(str(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))) + " 座位预约自动实现成功！")
+        app.logger.info("座位预约自动实现成功！")
     elif result == 'False':
-        app.logger.error(str(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))) + " 数据库操作错误！")
+        app.logger.error("数据库操作错误！")
     else:
-        app.logger.warn(str(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))) + " 无需操作的数据！")
+        app.logger.warn("无需操作的数据！")
 
 
 executor = ThreadPoolExecutor(10)

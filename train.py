@@ -11,9 +11,7 @@ from keras.backend.tensorflow_backend import set_session
 from utils.utils import get_random_data
 
 
-# ---------------------------------------------------#
-#   获得类和先验框
-# ---------------------------------------------------#
+# 获得类和先验框
 def get_classes(classes_path):
     """loads the classes"""
     with open(classes_path) as f:
@@ -30,9 +28,7 @@ def get_anchors(anchors_path):
     return np.array(anchors).reshape(-1, 2)
 
 
-# ---------------------------------------------------#
-#   训练数据生成器
-# ---------------------------------------------------#
+# 训练数据生成器
 def data_generator(annotation_lines, batch_size, input_shape, anchors, num_classes):
     """data generator for fit_generator"""
     n = len(annotation_lines)
@@ -53,9 +49,7 @@ def data_generator(annotation_lines, batch_size, input_shape, anchors, num_class
         yield [image_data, *y_true], np.zeros(batch_size)
 
 
-# ---------------------------------------------------#
-#   读入xml文件，并输出y_true
-# ---------------------------------------------------#
+# 读入xml文件，并输出y_true
 def preprocess_true_boxes(true_boxes, input_shape, anchors, num_classes):
     assert (true_boxes[..., 4] < num_classes).all(), 'class id must be less than num_classes'
     # 一共有三个特征层数

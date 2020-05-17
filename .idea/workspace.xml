@@ -2,9 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="883beecd-ece1-4f72-a1db-aa4b881616ff" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/2007_test.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/2007_val.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysql.py" beforeDir="false" afterPath="$PROJECT_DIR$/mysql.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nets/darknet53.py" beforeDir="false" afterPath="$PROJECT_DIR$/nets/darknet53.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nets/loss.py" beforeDir="false" afterPath="$PROJECT_DIR$/nets/loss.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nets/yolo3.py" beforeDir="false" afterPath="$PROJECT_DIR$/nets/yolo3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/train.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/voc_annotation.py" beforeDir="false" afterPath="$PROJECT_DIR$/voc_annotation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolo.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -310,6 +317,8 @@
       <workItem from="1589452216799" duration="1417000" />
       <workItem from="1589516906568" duration="10691000" />
       <workItem from="1589564295701" duration="1358000" />
+      <workItem from="1589628075178" duration="13001000" />
+      <workItem from="1589678236411" duration="1380000" />
     </task>
     <servers />
   </component>

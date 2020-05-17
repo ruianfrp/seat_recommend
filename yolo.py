@@ -30,9 +30,7 @@ class YOLO(object):
         else:
             return "Unrecognized attribute name '" + n + "'"
 
-    # ---------------------------------------------------#
-    #   初始化yolo
-    # ---------------------------------------------------#
+    # 初始化yolo
     def __init__(self, **kwargs):
         self.__dict__.update(self._defaults)
         self.class_names = self._get_class()
@@ -40,9 +38,7 @@ class YOLO(object):
         self.sess = K.get_session()
         self.boxes, self.scores, self.classes = self.generate()
 
-    # ---------------------------------------------------#
-    #   获得所有的分类
-    # ---------------------------------------------------#
+    # 获得所有的分类
     def _get_class(self):
         classes_path = os.path.expanduser(self.classes_path)
         with open(classes_path) as f:
@@ -50,9 +46,7 @@ class YOLO(object):
         class_names = [c.strip() for c in class_names]
         return class_names
 
-    # ---------------------------------------------------#
-    #   获得所有的先验框
-    # ---------------------------------------------------#
+    # 获得所有的先验框
     def _get_anchors(self):
         anchors_path = os.path.expanduser(self.anchors_path)
         with open(anchors_path) as f:
@@ -60,9 +54,7 @@ class YOLO(object):
         anchors = [float(x) for x in anchors.split(',')]
         return np.array(anchors).reshape(-1, 2)
 
-    # ---------------------------------------------------#
-    #   获得所有的分类
-    # ---------------------------------------------------#
+    # 获得所有的分类
     def generate(self):
         model_path = os.path.expanduser(self.model_path)
         assert model_path.endswith('.h5'), 'Keras model or weights must be a .h5 file.'
@@ -105,9 +97,7 @@ class YOLO(object):
                                            score_threshold=self.score, iou_threshold=self.iou)
         return boxes, scores, classes
 
-    # ---------------------------------------------------#
-    #   检测图片
-    # ---------------------------------------------------#
+    # 检测图片
     def detect_image(self, image, classroom_id):
         start = timer()
 
@@ -155,50 +145,51 @@ class YOLO(object):
             point_x = (right + left) / 2
             point_y = (top + bottom) / 2
             # 判断是否有人
-            if predicted_class == 'person':
-                result = mysql.seat_select(point_x, point_y, classroom_id)
-                if result.__len__() == 1:
-                    mysql.seat_update(result[0][0])
-                elif result.__len__() >= 2:
-                    distance = 0.00
-                    r_id = 0
-                    for r in result:
-                        pic_x = (r[3] + r[4]) / 2
-                        pic_y = (r[1] + r[2]) / 2
-                        aa = round(math.sqrt(math.pow((pic_x - point_x)) + math.pow((pic_y - point_y))), 2)
-                        if aa > distance:
-                            r_id = r[0]
-                            distance = aa
-                    if r_id != 0:
-                        mysql.seat_update(r_id)
+        #     if predicted_class == 'person':
+        #         result = mysql.seat_select(point_x, point_y, classroom_id)
+        #         if result.__len__() == 1:
+        #             mysql.seat_update(result[0][0])
+        #         elif result.__len__() >= 2:
+        #             distance = 0.00
+        #             r_id = 0
+        #             for r in result:
+        #                 pic_x = (r[3] + r[4]) / 2
+        #                 pic_y = (r[1] + r[2]) / 2
+        #                 aa = round(math.sqrt(math.pow((pic_x - point_x)) + math.pow((pic_y - point_y))), 2)
+        #                 if aa > distance:
+        #                     r_id = r[0]
+        #                     distance = aa
+        #             if r_id != 0:
+        #                 mysql.seat_update(r_id)
+        #
+        # print('6' * 60)
 
-        print('6' * 60)
+            # if predicted_class == 'person':
+            # 画框
+            label = '{} {:.2f}'.format(predicted_class, score)
+            draw = ImageDraw.Draw(image)
+            label_size = draw.textsize(label, font)
+            label = label.encode('utf-8')
+            print(label)
 
-        #     # 画框
-        #     label = '{} {:.2f}'.format(predicted_class, score)
-        #     draw = ImageDraw.Draw(image)
-        #     label_size = draw.textsize(label, font)
-        #     label = label.encode('utf-8')
-        #     print(label)
-        #
-        #     if top - label_size[1] >= 0:
-        #         text_origin = np.array([left, top - label_size[1]])
-        #     else:
-        #         text_origin = np.array([left, top + 1])
-        #
-        #     for i in range(thickness):
-        #         draw.rectangle(
-        #             [left + i, top + i, right - i, bottom - i],
-        #             outline=self.colors[c])
-        #     draw.rectangle(
-        #         [tuple(text_origin), tuple(text_origin + label_size)],
-        #         fill=self.colors[c])
-        #     draw.text(text_origin, str(label, 'UTF-8'), fill=(0, 0, 0), font=font)
-        #     del draw
-        #
-        # end = timer()
-        # print(end - start)
-        # return image
+            if top - label_size[1] >= 0:
+                text_origin = np.array([left, top - label_size[1]])
+            else:
+                text_origin = np.array([left, top + 1])
+
+            for i in range(thickness):
+                draw.rectangle(
+                     [left + i, top + i, right - i, bottom - i],
+                     outline=self.colors[c])
+            draw.rectangle(
+                [tuple(text_origin), tuple(text_origin + label_size)],
+                fill=self.colors[c])
+            draw.text(text_origin, str(label, 'UTF-8'), fill=(0, 0, 0), font=font)
+            del draw
+
+        end = timer()
+        print(end - start)
+        return image
 
     def close_session(self):
         self.sess.close()

@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ET
 from os import getcwd
+
 # 输出设置
 sets = [('2007', 'train'), ('2007', 'val'), ('2007', 'test')]
 # 分类

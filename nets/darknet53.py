@@ -6,9 +6,7 @@ from keras.regularizers import l2
 from utils.utils import compose
 
 
-# --------------------------------------------------#
-#   单次卷积
-# --------------------------------------------------#
+# 单次卷积
 @wraps(Conv2D)
 def DarknetConv2D(*args, **kwargs):
     darknet_conv_kwargs = {'kernel_regularizer': l2(5e-4)}
@@ -17,10 +15,8 @@ def DarknetConv2D(*args, **kwargs):
     return Conv2D(*args, **darknet_conv_kwargs)
 
 
-# ---------------------------------------------------#
-#   卷积块
-#   DarknetConv2D + BatchNormalization + LeakyReLU
-# ---------------------------------------------------#
+# 卷积块
+# DarknetConv2D + BatchNormalization(批量标准化) + LeakyReLU(给所有负值一个非零的斜率)
 def DarknetConv2D_BN_Leaky(*args, **kwargs):
     no_bias_kwargs = {'use_bias': False}
     no_bias_kwargs.update(kwargs)
@@ -30,10 +26,8 @@ def DarknetConv2D_BN_Leaky(*args, **kwargs):
         LeakyReLU(alpha=0.1))
 
 
-# ---------------------------------------------------#
-#   卷积块
-#   DarknetConv2D + BatchNormalization + LeakyReLU
-# ---------------------------------------------------#
+# 残差模块
+# DarknetConv2D + BatchNormalization(批量标准化) + LeakyReLU(给所有负值一个非零的斜率)
 def resblock_body(x, num_filters, num_blocks):
     x = ZeroPadding2D(((1, 0), (1, 0)))(x)
     x = DarknetConv2D_BN_Leaky(num_filters, (3, 3), strides=(2, 2))(x)
@@ -44,9 +38,7 @@ def resblock_body(x, num_filters, num_blocks):
     return x
 
 
-# ---------------------------------------------------#
-#   darknet53 的主体部分
-# ---------------------------------------------------#
+# Darknet-53 的主体
 def darknet_body(x):
     x = DarknetConv2D_BN_Leaky(32, (3, 3))(x)
     x = resblock_body(x, 64, 1)
