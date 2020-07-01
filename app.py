@@ -87,11 +87,6 @@ def login_required(view_func):
     return verify_token
 
 
-@app.route('/', methods=['GET'])
-def ping_pong():
-    return jsonify('Hello World!')
-
-
 # 登录
 @app.route('/login', methods=['POST'])
 def login():
