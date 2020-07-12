@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="883beecd-ece1-4f72-a1db-aa4b881616ff" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolo.py" afterDir="false" />
-    </list>
+    <list default="true" id="883beecd-ece1-4f72-a1db-aa4b881616ff" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -313,7 +310,7 @@
       <workItem from="1589678236411" duration="1380000" />
       <workItem from="1589684053812" duration="327000" />
       <workItem from="1589692865997" duration="1902000" />
-      <workItem from="1593589596995" duration="326000" />
+      <workItem from="1593589596995" duration="909000" />
     </task>
     <servers />
   </component>
